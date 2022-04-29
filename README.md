@@ -1,2 +1,2 @@
 # zebec-dca
-Dollar Cost averaging for Zebec 
+Client sdk for Dollar Cost Averaging Program of Zebec.

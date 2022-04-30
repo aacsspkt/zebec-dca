@@ -48,7 +48,18 @@ const initializeSchema = new Map([
 ])
 
 
-const depositSolSchema = new Map(); // todo
+const depositSolSchema = new Map([
+    [
+        DepositSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["amount", "u64"],
+            ],
+        }
+    ]
+]);
 
 
 const swapToSol = new Map(); // todo
@@ -57,16 +68,60 @@ const swapToSol = new Map(); // todo
 const swapFromSol = new Map() // todo
 
 
-const withdrawTokenSchema = new Map(); // todo
+const withdrawTokenSchema = new Map([
+    [
+        WithdrawTokenData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
 
 
-const withdrawSolSchema = new Map(); // todo
+const withdrawSolSchema = new Map([
+    [
+        WithdrawSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
 
 
-const fundTokenSchema = new Map(); // todo
+const fundTokenSchema = new Map([
+    [
+        FundTokenData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
 
 
-const fundSolSchema = new Map(); // todo
+const fundSolSchema = new Map([
+    [
+        FundSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
 
 
 /** 
@@ -113,7 +168,9 @@ export class InitializeData {
 }
 
 
-/** Schema for deposit sol data */
+/**
+ *  Data for "InstructionTypes.ProcessDepositSol"
+ */
 export class DepositSolData {
     constructor({ amount }) {
         this.instruction = InstructionTypes.ProcessDepositSol;
@@ -130,44 +187,96 @@ export class DepositSolData {
     }
 }
 
-
+/**
+ * Data for "InstructionTypes.ProcessSwapToSol"
+ */
 export class SwapToSolData {
     constructor(args) {
         throw new Error("Not Implemented");
     }
 }
 
-
+/**
+ * Data for "IntructionTypes.ProcessSwapFromSol"
+ */
 export class SwapFromSolData {
     constructor(args) {
         throw new Error("Not Implemented");
     }
 }
 
-
+/**
+ * Data for "InstructionTypes.ProcessWithdrawToken"
+ */
 export class WithdrawTokenData {
-    constructor(args) {
-        throw new Error("Not Implemented");
+    constructor({ transferAmount }) {
+        this.instruction = InstructionTypes.ProcessWithdrawToken;
+        // todo: validate
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(withdrawTokenSchema, this))
     }
 }
 
-
+/**
+ * Data for "InstructionTypes.ProcessWithdrawSol"
+ */
 export class WithdrawSolData {
-    constructor(args) {
-        throw new Error("Not Implemented");
+    constructor({ transferAmount }) {
+        this.instruction = InstructionTypes.ProcessWithdrawSol;
+        // todo: validate
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(withdrawSolSchema, this))
     }
 }
 
-
+/**
+ * Data for "InstructionTypes.ProcessFundToken"
+ */
 export class FundTokenData {
-    constructor(args) {
-        throw new Error("Not Implemented");
+    constructor({ transferAmount }) {
+        this.instruction = InstructionTypes.ProcessFundToken;
+        // todo: validate
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(fundTokenSchema, this))
     }
 }
 
-
+/**
+ * Data for "InstructionTypes.ProcessFundSol"
+ */
 export class FundSolData {
-    constructor(args) {
-        throw new Error("Not Implemented");
+    constructor({ transferAmount }) {
+        this.instruction = InstructionTypes.ProcessFundSol;
+        // todo: validate
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(fundSolSchema, this))
     }
 }

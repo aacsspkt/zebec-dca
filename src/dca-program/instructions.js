@@ -40,7 +40,7 @@ export class DcaProgram {
                 !dcaDataAddress instanceof PublicKey) {
                 throw new TypeError("Not a public key.")
             }
-            const [vaultAddress,] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+            const [vaultAddress,] = await deriveDcaAddress([fromAddress.toBuffer(), dcaDataAddress.toBuffer()]);
             const [senderAta,] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
             const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
 

@@ -26,19 +26,17 @@ export class DcaProgram {
             if (!fromAddress instanceof PublicKey && !mintAddress instanceof PublicKey) {
                 throw new TypeError("Not a public key.")
             }
-            const senderAddress = new PublicKey(fromAddress);
             const dcaDataAddress = Keypair.generate();
-            const tokenMintAddress = new PublicKey(mintAddress);
-            const [vaultAddress, bump] = await deriveZebecAddress([senderAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
-            const [senderAta, bump1] = await deriveAssociatedTokenAddress(senderAddress, tokenMintAddress);
-            const [vaultAta, bump2] = await deriveAssociatedTokenAddress(vaultAddress, tokenMintAddress);
+            const [vaultAddress, bump] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
+            const [senderAta, bump1] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
+            const [vaultAta, bump2] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
 
             const data = new DepositTokenData({ amount: convertToLamports(amountInSol) }).encode();
 
             return new TransactionInstruction({
                 keys: [
                     {
-                        pubkey: senderAddress,
+                        pubkey: fromAddress,
                         isSigner: true,
                         isWritable: true
                     },
@@ -53,7 +51,7 @@ export class DcaProgram {
                         isWritable: false
                     },
                     {
-                        pubkey: tokenMintAddress,
+                        pubkey: mintAddress,
                         isSigner: false,
                         isWritable: false
                     },

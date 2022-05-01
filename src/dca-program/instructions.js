@@ -4,12 +4,16 @@ import { DepositTokenData } from "./instructionData";
 import { convertToLamports } from "./utils/helper";
 
 
-/** Derive wallet address owned by DCA Program */
+/** 
+ * Derive wallet address owned by DCA Program 
+ */
 export async function deriveDcaAddress(seed) {
     return await PublicKey.findProgramAddress(seed, DCA_PROGRAM_ID)
 }
 
-/** Derive associated token address */
+/** 
+ * Derive associated token address
+ */
 export async function deriveAssociatedTokenAddress(walletAddress, tokenMintAddress) {
     return await PublicKey.findProgramAddress([
         walletAddress.toBuffer(),
@@ -20,15 +24,23 @@ export async function deriveAssociatedTokenAddress(walletAddress, tokenMintAddre
     );
 }
 
+
+/** 
+ * The class to interact with DCA program
+ */
 export class DcaProgram {
 
-    static async depositToken({ fromAddress, mintAddress, amountInSol }) {
+    /** 
+     * Create Transaction Instruction that deposit non native token to DCA vault
+     */
+    static async depositToken({ fromAddress, mintAddress, dcaDataAddress, amountInSol }) {
         try {
-            if (!fromAddress instanceof PublicKey && !mintAddress instanceof PublicKey) {
+            if (!fromAddress instanceof PublicKey &&
+                !mintAddress instanceof PublicKey &&
+                !dcaDataAddress instanceof PublicKey) {
                 throw new TypeError("Not a public key.")
             }
-            const dcaDataAddress = Keypair.generate();
-            const [vaultAddress,] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
+            const [vaultAddress,] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.toBuffer()]);
             const [senderAta,] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
             const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
 

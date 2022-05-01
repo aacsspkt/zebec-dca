@@ -1,84 +1,78 @@
-import { clusterApiUrl, Connection, Transaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { DcaProgram } from "./instructions";
 
-export class DcaProgramClient {
-    constructor({ wallet, url = null, cluster = null }) {
-        if (!wallet) {
-            throw new Error("Wallet is not provided.");
-        }
-        this.wallet = wallet;
-        url ?
-            this.connection = new Connection(url) :
-            cluster ?
-                this.connection = new Connection(clusterApiUrl(cluster)) :
-                this.connection = new Connection(clusterApiUrl(cluster));
+export const getProvider = async () => {
+    const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
+    if (isPhantomInstalled) {
+        window.solana.connect();
+    } else {
+        window.open("https://phantom.app/", "_blank");
     }
+};
 
 
+export async function depositToken({ connection, senderAddress, mintAddress, amountInSol }) {
+    try {
 
-    async depositToken({ senderAddress, mintAddress, amountInSol }) {
-        try {
+        let txn = new Transaction()
+            .add(DcaProgram.depositSol({
+                fromAddress: new PublicKey(senderAddress),
+                mintAddress: new PublicKey(mintAddress),
+                amountInSol: amountInSol
+            }));
+        txn.feePayer = window.solana.publicKey;
+        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-            let tx = new Transaction()
-                .add(DcaProgram.depositSol({
-                    fromAddress: senderAddress,
-                    mintAddress: mintAddress,
-                    amountInSol: amountInSol
-                }));
-            tx.feePayer = window.solana.publicKey;
-            tx.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
+        const signature = window.solana.signAndSendTransaction(txn);
+        await connection.confirmTransaction(signature, "confirmed");
 
-            const signature = this.wallet.signAndSendTransaction() // todo
-            await this.connection.confirmTransaction(signature, "confirmed");
-
-            return {
-                status: "success",
-                data: {
-                    signature: signature
-                }
+        return {
+            status: "success",
+            data: {
+                signature: signature
             }
-        } catch (e) {
-            throw e;
         }
+    } catch (e) {
+        throw e;
     }
+}
 
 
-    async initialize(args) {
-        throw new Error("Not Implemented");
-    }
+export async function initialize(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async depositSol(args) {
-        throw new Error("Not Implemented");
-    }
+export async function depositSol(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async withdrawToken(args) {
-        throw new Error("Not Implemented");
-    }
+export async function withdrawToken(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async withdrawSol(args) {
-        throw new Error("Not Implemented");
-    }
+export async function withdrawSol(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async swapFromSol(args) {
-        throw new Error("Not Implemented");
-    }
+export async function swapFromSol(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async swapToSol(args) {
-        throw new Error("Not Implemented");
-    }
+export async function swapToSol(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async fundToken(args) {
-        throw new Error("Not Implemented");
-    }
+export async function fundToken(args) {
+    throw new Error("Not Implemented");
+}
 
 
-    async fundSol(args) {
-        throw new Error("Not Implemented");
-    }
+export async function fundSol(args) {
+    throw new Error("Not Implemented");
 }

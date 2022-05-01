@@ -17,113 +17,6 @@ export const InstructionTypes = Object.freeze({
 });
 
 
-const depositTokenSchema = new Map([
-    [
-        DepositTokenData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["amount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
-const initializeSchema = new Map([
-    [
-        InitializeData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["startTime", "u64"],
-                ["dcaAmount", "u64"],
-                ["dcaTime", "u64"],
-                ["minimumAmountOut", "u64"]
-            ]
-        }
-    ]
-])
-
-
-const depositSolSchema = new Map([
-    [
-        DepositSolData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["amount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
-const swapToSol = new Map(); // todo
-
-
-const swapFromSol = new Map() // todo
-
-
-const withdrawTokenSchema = new Map([
-    [
-        WithdrawTokenData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["transferAmount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
-const withdrawSolSchema = new Map([
-    [
-        WithdrawSolData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["transferAmount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
-const fundTokenSchema = new Map([
-    [
-        FundTokenData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["transferAmount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
-const fundSolSchema = new Map([
-    [
-        FundSolData,
-        {
-            kind: "struct",
-            fields: [
-                ["instruction", "u8"],
-                ["transferAmount", "u64"],
-            ],
-        }
-    ]
-]);
-
-
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
  */
@@ -280,3 +173,110 @@ export class FundSolData {
         return Buffer.from(serialize(fundSolSchema, this))
     }
 }
+
+
+const depositTokenSchema = new Map([
+    [
+        DepositTokenData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["amount", "u64"],
+            ],
+        }
+    ]
+]);
+
+
+const initializeSchema = new Map([
+    [
+        InitializeData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["startTime", "u64"],
+                ["dcaAmount", "u64"],
+                ["dcaTime", "u64"],
+                ["minimumAmountOut", "u64"]
+            ]
+        }
+    ]
+])
+
+
+const depositSolSchema = new Map([
+    [
+        DepositSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["amount", "u64"],
+            ],
+        }
+    ]
+]);
+
+
+const swapToSol = new Map(); // todo
+
+
+const swapFromSol = new Map() // todo
+
+
+const withdrawTokenSchema = new Map([
+    [
+        WithdrawTokenData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
+
+
+const withdrawSolSchema = new Map([
+    [
+        WithdrawSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
+
+
+const fundTokenSchema = new Map([
+    [
+        FundTokenData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);
+
+
+const fundSolSchema = new Map([
+    [
+        FundSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["transferAmount", "u64"],
+            ],
+        }
+    ]
+]);

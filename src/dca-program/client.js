@@ -15,7 +15,7 @@ export async function depositToken({ connection, senderAddress, mintAddress, amo
     try {
 
         let txn = new Transaction()
-            .add(DcaProgram.depositSol({
+            .add(DcaProgram.depositToken({
                 fromAddress: new PublicKey(senderAddress),
                 mintAddress: new PublicKey(mintAddress),
                 amountInSol: amountInSol

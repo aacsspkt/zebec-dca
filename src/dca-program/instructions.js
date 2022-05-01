@@ -5,11 +5,11 @@ import { convertToLamports } from "./utils/helper";
 
 
 /** derive wallet address owned by DCA Program */
-export const deriveZebecAddress = async (seed) => {
+export async function deriveZebecAddress(seed) {
     return PublicKey.findProgramAddress(seed, DCA_PROGRAM_ID)
 }
 
-export const deriveAssociatedTokenAddress = async (walletAddress, tokenMintAddress) => {
+export async function deriveAssociatedTokenAddress(walletAddress, tokenMintAddress) {
     return PublicKey.findProgramAddress([
         walletAddress.toBuffer(),
         TOKEN_PROGRAM_ID.toBuffer(),
@@ -21,12 +21,15 @@ export const deriveAssociatedTokenAddress = async (walletAddress, tokenMintAddre
 
 export class DcaProgram {
 
-    depositToken({ fromAddress, tokenAddress, amountInSol }) {
+    static async depositToken({ fromAddress, mintAddress, amountInSol }) {
         try {
+            if (!fromAddress instanceof PublicKey && !mintAddress instanceof PublicKey) {
+                throw new TypeError("Not a public key.")
+            }
             const senderAddress = new PublicKey(fromAddress);
             const dcaDataAddress = Keypair.generate();
+            const tokenMintAddress = new PublicKey(mintAddress);
             const [vaultAddress, bump] = await deriveZebecAddress([senderAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
-            const tokenMintAddress = new PublicKey(tokenAddress);
             const [senderAta, bump1] = await deriveAssociatedTokenAddress(senderAddress, tokenMintAddress);
             const [vaultAta, bump2] = await deriveAssociatedTokenAddress(vaultAddress, tokenMintAddress);
 
@@ -93,19 +96,19 @@ export class DcaProgram {
         }
     }
 
-    depositSol()
+    static async depositSol() { }
 
-    initialize()
+    static async initialize() { }
 
-    withdrawToken()
+    static async withdrawToken() { }
 
-    withdrawSol()
+    static async withdrawSol() { }
 
-    fundToken()
+    fundToken() { }
 
-    fundSol()
+    fundSol() { }
 
-    swapFromSol()
+    swapFromSol() { }
 
-    swapToSol()
+    swapToSol() { }
 } 

@@ -4,13 +4,14 @@ import { DepositTokenData } from "./instructionData";
 import { convertToLamports } from "./utils/helper";
 
 
-/** derive wallet address owned by DCA Program */
-export async function deriveZebecAddress(seed) {
-    return PublicKey.findProgramAddress(seed, DCA_PROGRAM_ID)
+/** Derive wallet address owned by DCA Program */
+export async function deriveDcaAddress(seed) {
+    return await PublicKey.findProgramAddress(seed, DCA_PROGRAM_ID)
 }
 
+/** Derive associated token address */
 export async function deriveAssociatedTokenAddress(walletAddress, tokenMintAddress) {
-    return PublicKey.findProgramAddress([
+    return await PublicKey.findProgramAddress([
         walletAddress.toBuffer(),
         TOKEN_PROGRAM_ID.toBuffer(),
         tokenMintAddress.toBuffer()
@@ -27,9 +28,9 @@ export class DcaProgram {
                 throw new TypeError("Not a public key.")
             }
             const dcaDataAddress = Keypair.generate();
-            const [vaultAddress, bump] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
-            const [senderAta, bump1] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
-            const [vaultAta, bump2] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+            const [vaultAddress,] = await deriveZebecAddress([fromAddress.toBuffer(), dcaDataAddress.publicKey.toBuffer()]);
+            const [senderAta,] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
+            const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
 
             const data = new DepositTokenData({ amount: convertToLamports(amountInSol) }).encode();
 
@@ -102,11 +103,11 @@ export class DcaProgram {
 
     static async withdrawSol() { }
 
-    fundToken() { }
+    static async fundToken() { }
 
-    fundSol() { }
+    static async fundSol() { }
 
-    swapFromSol() { }
+    static async swapFromSol() { }
 
-    swapToSol() { }
+    static async swapToSol() { }
 } 

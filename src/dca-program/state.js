@@ -29,7 +29,7 @@ export class DcaAccount {
      * @returns Object instance of DcaAccount  
      */
     static decode(data) {
-        if (!data instanceof Buffer) {
+        if (!(data instanceof Buffer)) {
             throw new TypeError("Not a buffer!")
         }
         return deserialize(dcaAccountSchema, this, data);
@@ -41,7 +41,7 @@ export class DcaAccount {
      * @returns 
      */
     static decodeUnchecked(data) {
-        if (!data instanceof Buffer) {
+        if (!(data instanceof Buffer)) {
             throw new TypeError("Not a buffer!")
         }
         return deserializeUnchecked(dcaAccountSchema, this, data);

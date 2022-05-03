@@ -1,4 +1,4 @@
-import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { DcaProgram } from "./instructions";
 
 export const getProvider = async () => {

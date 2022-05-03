@@ -16,5 +16,6 @@ export {
 /** The public key DCA Program. */
 export const DCA_PROGRAM_ID = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tzAATRp19c7");
 
+/** Json RPC client to communicate with Solana blockchain */
 export const connection = new Connection(clusterApiUrl("devnet"));
 

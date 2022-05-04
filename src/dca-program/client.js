@@ -26,21 +26,17 @@ export async function depositToken({ connection, fromAddress, mintAddress, amoun
 
         let dcaDataAccount = Keypair.generate();
 
-        let instruction = await DcaProgram.depositToken({
-            fromAddress: new PublicKey(fromAddress),
-            mintAddress: new PublicKey(mintAddress),
-            dcaDataAddress: dcaDataAccount.publicKey,
-            amount: amount
-        });
-        console.log(instruction);
-
         let txn = new Transaction()
-            .add(instruction);
+            .add(await DcaProgram.depositToken({
+                fromAddress: new PublicKey(fromAddress),
+                mintAddress: new PublicKey(mintAddress),
+                dcaDataAddress: dcaDataAccount.publicKey,
+                amount: amount
+            }));
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
-        console.log(txn);
-        console.log(new PublicKey(fromAddress));
+
         const signedTxn = await window.solana.signTransaction(txn);
         const signature = await connection.sendRawTransaction(signedTxn.serialize());
         await connection.confirmTransaction(signature, "confirmed");

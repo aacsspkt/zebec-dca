@@ -36,8 +36,8 @@ export async function depositToken({ connection, fromAddress, mintAddress, amoun
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -75,8 +75,8 @@ export async function initialize({ connection, fromAddress, dcaDataAddress, star
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -112,9 +112,10 @@ export async function depositSol(connection, fromAddress, mintAddress, amount) {
             }));
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+        txn.partialSign(dcaDataAccount);
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -150,8 +151,8 @@ export async function withdrawToken({ connection, fromAddress, dcaDataAddress, m
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -186,8 +187,8 @@ export async function withdrawSol({ connection, fromAddress, mintAddress, dcaDat
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -232,8 +233,8 @@ export async function fundToken({ connection, fromAddress, mintAddress, dcaDataA
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {
@@ -268,8 +269,8 @@ export async function fundSol({ connection, fromAddress, mintAddress, dcaDataAdd
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const signedTxn = window.solana.signTransaction(txn.serialize());
-        const signature = connection.sendRawTransaction(signedTxn);
+        const signedTxn = await window.solana.signTransaction(txn.serialize());
+        const signature = await connection.sendRawTransaction(signedTxn);
         await connection.confirmTransaction(signature, "confirmed");
 
         return {

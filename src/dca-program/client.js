@@ -38,6 +38,7 @@ export async function depositToken({ connection, fromAddress, mintAddress, amoun
         txn.partialSign(dcaDataAccount);
 
         const signedTxn = await window.solana.signTransaction(txn);
+        console.log(signedTxn.serialize());
         const signature = await connection.sendRawTransaction(signedTxn.serialize());
         await connection.confirmTransaction(signature, "confirmed");
 
@@ -92,7 +93,7 @@ export async function initialize({ connection, fromAddress, dcaDataAddress, star
 }
 
 
-export async function depositSol(connection, fromAddress, mintAddress, amount) {
+export async function depositSol({ connection, fromAddress, mintAddress, amount }) {
     try {
         if (!connection && !fromAddress && !mintAddress && !amount) {
             throw new ReferenceError("Missing arguments.");

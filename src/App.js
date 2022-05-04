@@ -23,9 +23,9 @@ function App() {
     try {
       const { status, data } = await depositToken({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         mintAddress: "E8nLUMPzHnhPH3ygEqWow3RMzJL1zgonm3qfYube9kPr",
-        amount: 0.5
+        amount: 0.1
       });
       console.log(status);
       console.log(data.signature);
@@ -60,7 +60,7 @@ function App() {
     try {
       const { status, data } = await withdrawToken({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         mintAddress: "",
         dcaDataAddress: dcaAddress,
         transferAmount: 0.5
@@ -77,7 +77,7 @@ function App() {
     try {
       const { status, data } = initialize({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         dcaDataAddress: dcaAddress,
         startTime: Math.floor(Date.now() + 10),
         dcaAmount: 0.5,
@@ -96,7 +96,7 @@ function App() {
     try {
       const { status, data } = await withdrawSol({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         mintAddress: "",
         dcaDataAddress: dcaAddress,
         transferAmount: 0.5
@@ -113,7 +113,7 @@ function App() {
     try {
       const { status, data } = await fundToken({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         mintAddress: "",
         dcaDataAddress: dcaAddress,
         transferAmount: 0.5
@@ -130,7 +130,7 @@ function App() {
     try {
       const { status, data } = await fundSol({
         connection: connection,
-        fromAddress: window.solana.publicKey,
+        fromAddress: window.solana.publicKey.toBase58(),
         mintAddress: "",
         dcaDataAddress: dcaAddress,
         transferAmount: 0.5

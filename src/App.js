@@ -32,6 +32,7 @@ class DepositTokenData {
 }
 
 function App() {
+  extendBorsh();
 
   const depositTokenSchema = new Map([
     [
@@ -46,7 +47,6 @@ function App() {
     ]
   ]);
 
-  extendBorsh();
 
   const [dcaAddress, setDcaAddress] = useState("");
 

@@ -2,29 +2,13 @@
 
 import { serialize } from "borsh";
 
-
-/** Instruction Types of DCA Program */
-export const InstructionTypes = Object.freeze({
-    ProcessDepositToken: 0,
-    ProcessInitialize: 1,
-    ProcessDepositSol: 2,
-    ProcessSwapToSol: 3,
-    ProcessSwapFromSol: 4,
-    ProcessWithdrawToken: 5,
-    ProcessWithdrawSol: 6,
-    ProcessFundToken: 7,
-    ProcessFundSol: 8
-});
-
-
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
  */
 export class DepositTokenData {
     constructor({ amount }) {
-        this.instruction = InstructionTypes.ProcessDepositToken;
-        // todo: validate
-        this.amount = amount;
+        this.instruction = 0;
+        this.amount = 1000;
     }
 
 
@@ -33,7 +17,7 @@ export class DepositTokenData {
      * @returns Buffer | UInt8Array  of this object
      */
     encode() {
-        return Buffer.from(serialize(depositTokenSchema, this))
+        return Buffer.from(serialize(depositTokenSchema, this));
     }
 }
 
@@ -43,8 +27,7 @@ export class DepositTokenData {
  */
 export class InitializeData {
     constructor({ startTime, dcaAmount, dcaTime, minimumAmountOut }) {
-        this.instruction = InstructionTypes.ProcessInitialize;
-        // todo: validate
+        this.instruction = 1;
         this.startTime = startTime;
         this.dcaAmount = dcaAmount;
         this.dcaTime = dcaTime;
@@ -66,8 +49,7 @@ export class InitializeData {
  */
 export class DepositSolData {
     constructor({ amount }) {
-        this.instruction = InstructionTypes.ProcessDepositSol;
-        // todo: validate
+        this.instruction = 2;
         this.amount = amount;
     }
 
@@ -85,7 +67,15 @@ export class DepositSolData {
  */
 export class SwapToSolData {
     constructor(args) {
-        throw new Error("Not Implemented");
+        this.instruction = 3;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(swapToSolSchema, this))
     }
 }
 
@@ -94,7 +84,15 @@ export class SwapToSolData {
  */
 export class SwapFromSolData {
     constructor(args) {
-        throw new Error("Not Implemented");
+        this.instruction = 4;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(swapFromSolSchema, this))
     }
 }
 
@@ -103,8 +101,7 @@ export class SwapFromSolData {
  */
 export class WithdrawTokenData {
     constructor({ transferAmount }) {
-        this.instruction = InstructionTypes.ProcessWithdrawToken;
-        // todo: validate
+        this.instruction = 5;
         this.transferAmount = transferAmount;
     }
 
@@ -122,8 +119,7 @@ export class WithdrawTokenData {
  */
 export class WithdrawSolData {
     constructor({ transferAmount }) {
-        this.instruction = InstructionTypes.ProcessWithdrawSol;
-        // todo: validate
+        this.instruction = 6;
         this.transferAmount = transferAmount;
     }
 
@@ -141,8 +137,7 @@ export class WithdrawSolData {
  */
 export class FundTokenData {
     constructor({ transferAmount }) {
-        this.instruction = InstructionTypes.ProcessFundToken;
-        // todo: validate
+        this.instruction = 7;
         this.transferAmount = transferAmount;
     }
 
@@ -160,8 +155,7 @@ export class FundTokenData {
  */
 export class FundSolData {
     constructor({ transferAmount }) {
-        this.instruction = InstructionTypes.ProcessFundSol;
-        // todo: validate
+        this.instruction = 8;
         this.transferAmount = transferAmount;
     }
 
@@ -220,10 +214,30 @@ const depositSolSchema = new Map([
 ]);
 
 
-const swapToSol = new Map(); // todo
+const swapToSolSchema = new Map([
+    [
+        SwapToSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"]
+            ]
+        }
+    ]
+]);
 
 
-const swapFromSol = new Map() // todo
+const swapFromSolSchema = new Map([
+    [
+        SwapFromSolData,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"]
+            ]
+        }
+    ]
+]);
 
 
 const withdrawTokenSchema = new Map([

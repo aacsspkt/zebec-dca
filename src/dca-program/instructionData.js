@@ -1,6 +1,5 @@
 // import { serialize, deserialize, deserializeUnchecked } from 'borsh';
-
-import { serialize } from "borsh";
+import { deserialize, deserializeUnchecked, serialize, } from "borsh";
 
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
@@ -8,7 +7,7 @@ import { serialize } from "borsh";
 export class DepositTokenData {
     constructor({ amount }) {
         this.instruction = 0;
-        this.amount = 1000;
+        this.amount = amount;
     }
 
 
@@ -18,6 +17,30 @@ export class DepositTokenData {
      */
     encode() {
         return Buffer.from(serialize(depositTokenSchema, this));
+    }
+
+    /**
+     * Deserialize the buffer to Object
+     * @param {Buffer} data 
+     * @returns DepositTokenData object
+     */
+    decode(data) {
+        if (!(data instanceof Buffer)) {
+            throw new TypeError("Not a buffer.");
+        }
+        return deserialize(depositTokenSchema, this, data);
+    }
+
+    /**
+     * Deserialize the buffer to Object
+     * @param {Buffer} data
+     * @returns DepositTokenData Object 
+     */
+    decodeUnchecked(data) {
+        if (!(data instanceof Buffer)) {
+            throw new TypeError("Not a buffer.");
+        }
+        return deserializeUnchecked(depositSolSchema, this, data);
     }
 }
 

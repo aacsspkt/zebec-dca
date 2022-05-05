@@ -36,7 +36,7 @@ export async function depositToken({ connection, fromAddress, mintAddress, amoun
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
-
+        console.log(txn);
         const signedTxn = await window.solana.signTransaction(txn);
         console.log(signedTxn.serialize());
         const signature = await connection.sendRawTransaction(signedTxn.serialize());
@@ -76,7 +76,7 @@ export async function initialize({ connection, fromAddress, dcaDataAddress, star
             }));
         txn.feePayer = new PublicKey(fromAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
+        console.log(txn);
         const signedTxn = await window.solana.signTransaction(txn);
         const signature = await connection.sendRawTransaction(signedTxn.serialize());
         await connection.confirmTransaction(signature, "confirmed");

@@ -1,5 +1,6 @@
 // import { serialize, deserialize, deserializeUnchecked } from 'borsh';
 import { deserialize, deserializeUnchecked, serialize, } from "borsh";
+import { extendBorsh } from "../utils/borshExtension";
 
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
@@ -317,3 +318,5 @@ const fundSolSchema = new Map([
         }
     ]
 ]);
+
+extendBorsh();

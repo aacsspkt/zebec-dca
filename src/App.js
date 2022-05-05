@@ -32,7 +32,6 @@ class DepositTokenData {
 }
 
 function App() {
-  extendBorsh();
 
   const depositTokenSchema = new Map([
     [

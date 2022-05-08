@@ -5,7 +5,7 @@ import BN from "bn.js";
 /** 
  * Convert solana token amounts to lamports
  * @param {Number} amount
- * @returns amount of lamports in "string" type
+ * @returns Amount in lamports
  */
 export function convertToLamports(amount) {
     if (typeof amount !== "number") {

@@ -1,37 +1,44 @@
-import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, SYSVAR_RENT_PUBKEY } from "./dca-program/constants"
+
 import { useState } from 'react';
 import './App.css';
-import { extendBorsh } from "./utils/borshExtension";
+import { extendBorsh } from "./dca-program/utils/borshExtension";
 
 
 import {
   connection,
   getProvider,
-  depositToken,
+  // depositToken,
   depositSol,
   withdrawSol,
   withdrawToken,
   fundSol,
   fundToken,
   initialize,
-  DCA_PROGRAM_ID,
   deriveDcaAddress,
   deriveAssociatedTokenAddress,
+  DCA_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+  SYSVAR_RENT_PUBKEY
   // swapFromSol,
   // swapToSol
 } from "./dca-program";
-import { convertToLamports } from './utils/convertToLamports';
+import { convertToLamports } from './dca-program/utils/convertToLamports';
+import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { serialize } from 'borsh';
 
-class DepositTokenData {
-  constructor({ amount }) {
-    this.instruction = 0;
-    this.amount = amount;
-  }
-}
+extendBorsh();
+
+
 
 function App() {
+
+  class DepositTokenData {
+    constructor(args) {
+      this.instruction = 0;
+      this.amount = args.amount;
+    }
+  }
 
   const depositTokenSchema = new Map([
     [
@@ -75,14 +82,15 @@ function App() {
     try {
       const fromAddress = window.solana.publicKey;
       const mintAddress = new PublicKey("6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY");
-      const amount = 1;
+      const depositData = {
+        amount: convertToLamports(1)
+      };
 
-      const dcaAccount = Keypair.generate();
-      const dcaDataAddress = dcaAccount.publicKey;
-      const [vaultAddress,] = await deriveDcaAddress([fromAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+      const dcaAccount = new Keypair();
+      const [vaultAddress,] = await deriveDcaAddress([fromAddress.toBuffer(), dcaAccount.publicKey.toBuffer()]);
       const [senderAta,] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
       const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
-      const data = serialize(depositTokenSchema, new DepositTokenData({ amount: convertToLamports(amount) }));
+      const data = serialize(depositTokenSchema, new DepositTokenData(depositData));
 
       const txn = new Transaction();
       txn.add(new TransactionInstruction({
@@ -151,12 +159,12 @@ function App() {
       const signature = await connection.sendRawTransaction(signedTxn.serialize());
       await connection.confirmTransaction(signature, "confirmed");
 
-
+      console.log(signature);
       return {
         status: "success",
         data: {
           signature: signature,
-          dcaDataAddress: dcaDataAddress.toBase58()
+          dcaDataAddress: dcaAccount.publicKey.toBase58()
         }
       }
     } catch (e) {

@@ -1,5 +1,7 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
-import { DcaProgram } from "./instructions";
+import BN from "bn.js";
+import { DcaInstruction } from "./instructions";
+import { deriveDcaAddress, deriveAssociatedTokenAddress, convertToLamports } from "./utils";
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -11,108 +13,45 @@ export const getProvider = async () => {
 };
 
 /**
- * 
- * @returns Response object
+ * Deposit non-native token in dca program vault
+ * @param {Connection} connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who deposit the token
+ * @param {string} mint The address token mint
+ * @param {number} amount The amount to deposit
  */
-export async function depositToken({ connection, fromAddress, mintAddress, amount }) {
+export async function depositToken(connection, owner, mint, amount) {
     try {
-        if (!connection && !fromAddress && !mintAddress && !amount) {
+        if (!connection && !owner && !mint && !amount) {
             throw new ReferenceError("Missing arguments.");
         }
-
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc endpoint.");
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" && // assumed to be base58
+            typeof mint != "string" &&
+            typeof amount != "number"
+        ) {
+            throw new TypeError("Invalid argument types.");
         }
 
         let dcaDataAccount = Keypair.generate();
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const _amount = convertToLamports(amount);
 
         let txn = new Transaction()
-            .add(await DcaProgram.depositToken({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: dcaDataAccount.publicKey,
-                amount: amount
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
-        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-        txn.partialSign(dcaDataAccount);
-        console.log(txn);
-        const signedTxn = await window.solana.signTransaction(txn);
-        console.log(signedTxn.serialize());
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+            .add(DcaInstruction.depositToken(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAccount.publicKey,
+                _amount
+            ));
 
-        return {
-            status: "success",
-            data: {
-                signature: signature,
-                dcaDataAddress: dcaDataAccount.publicKey.toBase58()
-            }
-        }
-    } catch (e) {
-        throw e;
-    }
-}
-
-
-export async function initialize({ connection, fromAddress, dcaDataAddress, startTime, dcaAmount, dcaTime, minimumAmountOut }) {
-    try {
-        if (!connection && !fromAddress && !dcaDataAddress && !startTime && !dcaAmount && dcaTime && !minimumAmountOut) {
-            throw new ReferenceError("Missing arguments.");
-        }
-
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc enpoint.");
-        }
-
-        let txn = new Transaction()
-            .add(await DcaProgram.initialize({
-                fromAddress: new PublicKey(fromAddress),
-                dcaDataAddress: new PublicKey(dcaDataAddress),
-                startTime: startTime,
-                dcaAmount: dcaAmount,
-                dcaTime: dcaTime,
-                minimumAmountOut: minimumAmountOut
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
-        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-        console.log(txn);
-        const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
-
-        return {
-            status: "success",
-            data: {
-                signature: signature,
-            }
-        }
-    } catch (e) {
-        throw e;
-    }
-}
-
-
-export async function depositSol({ connection, fromAddress, mintAddress, amount }) {
-    try {
-        if (!connection && !fromAddress && !mintAddress && !amount) {
-            throw new ReferenceError("Missing arguments.");
-        }
-
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc enpoint.");
-        }
-
-        let dcaDataAccount = Keypair.generate();
-
-        let txn = new Transaction()
-            .add(await DcaProgram.depositSol({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: dcaDataAccount.publicKey,
-                amount: amount,
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
+        txn.feePayer = owner;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
 
@@ -132,25 +71,54 @@ export async function depositSol({ connection, fromAddress, mintAddress, amount 
     }
 }
 
-
-export async function withdrawToken({ connection, fromAddress, dcaDataAddress, mintAddress, transferAmount }) {
+/**
+ * Intialize dca process
+ * @param {Connection} The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} dcaData The address of the account which store dca state
+ * @param {string} mint The address of the token mint
+ * @param {number} startTime The unix timestamp from which dca process starts
+ * @param {number} dcaAmount The amount to be utilize for dca
+ * @param {number} dcaTime The timespan of dca
+ * @param {number} minimumAmountOut // todo
+ */
+export async function initialize(connection, owner, dcaData, startTime, dcaAmount, dcaTime, minimumAmountOut) {
     try {
-        if (!connection && !fromAddress && !mintAddress && !dcaDataAddress && !transferAmount) {
+        if (!connection && !owner && !dcaData && !startTime && !dcaAmount && dcaTime && !minimumAmountOut) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc enpoint.");
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof dcaData != "string" &&
+            typeof startTime != "number" &&
+            typeof dcaAmount != "number" &&
+            typeof dcaTime != "number" &&
+            typeof minimumAmountOut != "number"
+        ) {
+            throw new TypeError("Invalid argument types.");
         }
 
+        const ownerAddress = new PublicKey(owner);
+        const dcaDataAddress = new PublicKey(dcaData);
+        const vaultAddress = deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
+        const _startTime = new BN(startTime);
+        const _dcaAmount = convertToLamports(dcaAmount);
+        const _dcaTime = new BN(dcaTime);
+        const _minimumAmountOut = convertToLamports(minimumAmountOut);
+
         let txn = new Transaction()
-            .add(await DcaProgram.withdrawToken({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: new PublicKey(dcaDataAddress),
-                transferAmount: transferAmount,
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
+            .add(DcaInstruction.initialize(
+                ownerAddress,
+                vaultAddress,
+                dcaDataAddress,
+                _startTime,
+                _dcaAmount,
+                _dcaTime,
+                _minimumAmountOut
+            ));
+
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);
@@ -168,25 +136,164 @@ export async function withdrawToken({ connection, fromAddress, dcaDataAddress, m
     }
 }
 
-
-export async function withdrawSol({ connection, fromAddress, mintAddress, dcaDataAddress, transferAmount }) {
+/**
+ * Deposit sol in dca vault
+ * @param {Connection} connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} mint The address of token mint
+ * @param {number} amount The amount to deposit
+ */
+export async function depositSol(connection, owner, mint, amount) {
     try {
-        if (!connection && !fromAddress && !mintAddress && !dcaDataAddress && !transferAmount) {
+        if (!connection && !owner && !mint && !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection)) {
+        if (!(connection instanceof Connection) &&
+            !(owner instanceof PublicKey)
+        ) {
             throw new TypeError("Not a Rpc enpoint.");
         }
 
+        const dcaDataAccount = Keypair.generate();
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const _amount = convertToLamports(amount);
+
         let txn = new Transaction()
-            .add(await DcaProgram.withdrawSol({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: new PublicKey(dcaDataAddress),
-                transferAmount: transferAmount
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
+            .add(DcaInstruction.depositSol(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAccount.publicKey,
+                _amount
+            ));
+        txn.feePayer = new PublicKey(ownerAddress);
+        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+        txn.partialSign(dcaDataAccount);
+
+        const signedTxn = await window.solana.signTransaction(txn);
+        const signature = await connection.sendRawTransaction(signedTxn.serialize());
+        await connection.confirmTransaction(signature, "confirmed");
+
+        return {
+            status: "success",
+            data: {
+                signature: signature,
+                dcaDataAddress: dcaDataAccount.publicKey.toBase58()
+            }
+        }
+    } catch (e) {
+        throw e;
+    }
+}
+
+/**
+ * Withdraw non-native token from vault
+ * @param {Connection} connection The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} dcaData The address of account which store dca state
+ * @param {string} mint The address of token mint
+ * @param {number} transferAmount The amount to withdraw
+ */
+export async function withdrawToken(connection, owner, dcaData, mint, amount) {
+    try {
+        if (!connection && !owner && !mint && !dcaData && !amount) {
+            throw new ReferenceError("Missing arguments.");
+        }
+
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof dcaData != "string" &&
+            typeof mint != "string" &&
+            typeof amount != "number"
+        ) {
+            throw new TypeError("Invalid argument types.");
+        }
+
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const dcaDataAddress = new PublicKey(dcaData);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const transferAmount = convertToLamports(amount);
+
+        let txn = new Transaction()
+            .add(DcaInstruction.withdrawToken(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAddress,
+                transferAmount
+            ));
+        txn.feePayer = ownerAddress;
+        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        const signedTxn = await window.solana.signTransaction(txn);
+        const signature = await connection.sendRawTransaction(signedTxn.serialize());
+        await connection.confirmTransaction(signature, "confirmed");
+
+        return {
+            status: "success",
+            data: {
+                signature: signature,
+            }
+        }
+    } catch (e) {
+        throw e;
+    }
+}
+
+/**
+ * Withdraw native token from vault
+ * @param {Connection} connection The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} dcaData The address of the account which store dca state
+ * @param {string} mint The address of token mint
+ * @param {number} transferAmount The amount to withdraw
+ */
+export async function withdrawSol(connection, owner, mint, dcaData, amount) {
+    try {
+        if (!connection && !owner && !mint && !dcaData && !amount) {
+            throw new ReferenceError("Missing arguments.");
+        }
+
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof mint != "string" &&
+            typeof dcaData != "string" &&
+            typeof amount != "number"
+        ) {
+            throw new TypeError("Invalid argument types.");
+        }
+
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const dcaDataAddress = new PublicKey(dcaData);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const transferAmount = convertToLamports(amount);
+
+        let txn = new Transaction()
+            .add(DcaInstruction.withdrawSol(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAddress,
+                transferAmount
+            ));
+        txn.feePayer = new PublicKey(ownerAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);
@@ -214,25 +321,48 @@ export async function swapToSol(args) {
     throw new Error("Not Implemented");
 }
 
-
-export async function fundToken({ connection, fromAddress, mintAddress, dcaDataAddress, transferAmount }) {
+/**
+ * Fund non-native token to existing vault
+ * @param {Connection} connection The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} mint The address of token mint
+ * @param {string} dcaData The address of the account which store dca state
+ * @param {string} transferAmount The amount to fund
+ */
+export async function fundToken(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !fromAddress && !mintAddress && !dcaDataAddress && !transferAmount) {
+        if (!connection && !owner && !mint && !dcaData && !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc endpoint.");
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof mint != "string" &&
+            typeof dcaData != "string" &&
+            typeof amount != "string"
+        ) {
+            throw new TypeError("Invalid argument types.");
         }
 
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const dcaDataAddress = new PublicKey(dcaData);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const transferAmount = convertToLamports(amount);
+
         let txn = new Transaction()
-            .add(await DcaProgram.fundToken({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: new PublicKey(dcaDataAddress),
-                transferAmount: transferAmount
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
+            .add(DcaInstruction.fundToken(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAddress,
+                transferAmount
+            ));
+        txn.feePayer = new PublicKey(ownerAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);
@@ -250,25 +380,48 @@ export async function fundToken({ connection, fromAddress, mintAddress, dcaDataA
     }
 }
 
-
-export async function fundSol({ connection, fromAddress, mintAddress, dcaDataAddress, transferAmount }) {
+/**
+ * Fund native token to existing vault
+ * @param {Connection} connection The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} mint The address of token mint
+ * @param {string} dcaData The address of the account which store dca state
+ * @param {string} transferAmount The amount to fund
+ */
+export async function fundSol(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !fromAddress && !mintAddress && !dcaDataAddress && !transferAmount) {
+        if (!connection && !owner && !mint && !dcaData && !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection)) {
-            throw new TypeError("Not a Rpc endpoint.");
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof mint != "string" &&
+            typeof dcaData != "string" &&
+            typeof amount != "string"
+        ) {
+            throw new TypeError("Invalid argument types.");
         }
 
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const dcaDataAddress = new PublicKey(dcaData);
+        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const transferAmount = convertToLamports(amount);
+
         let txn = new Transaction()
-            .add(await DcaProgram.fundSol({
-                fromAddress: new PublicKey(fromAddress),
-                mintAddress: new PublicKey(mintAddress),
-                dcaDataAddress: new PublicKey(dcaDataAddress),
-                transferAmount: transferAmount
-            }));
-        txn.feePayer = new PublicKey(fromAddress);
+            .add(DcaInstruction.fundSol(
+                ownerAddress,
+                vaultAddress,
+                mintAddress,
+                ownerAta,
+                vaultAta,
+                dcaDataAddress,
+                transferAmount
+            ));
+        txn.feePayer = new PublicKey(ownerAddress);
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);

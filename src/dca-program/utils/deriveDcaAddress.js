@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { DCA_PROGRAM_ID } from "../constants";
 
 /** 

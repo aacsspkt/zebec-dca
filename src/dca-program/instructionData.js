@@ -1,12 +1,11 @@
-// import { serialize, deserialize, deserializeUnchecked } from 'borsh';
-import { deserialize, deserializeUnchecked, serialize, } from "borsh";
-import { extendBorsh } from "../utils/borshExtension";
+import { serialize, } from "borsh";
+import { extendBorsh } from "./utils/borshExtension";
 
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
  */
 export class DepositTokenData {
-    constructor({ amount }) {
+    constructor(amount) {
         this.instruction = 0;
         this.amount = amount;
     }
@@ -19,30 +18,6 @@ export class DepositTokenData {
     encode() {
         return Buffer.from(serialize(depositTokenSchema, this));
     }
-
-    /**
-     * Deserialize the buffer to Object
-     * @param {Buffer} data 
-     * @returns DepositTokenData object
-     */
-    decode(data) {
-        if (!(data instanceof Buffer)) {
-            throw new TypeError("Not a buffer.");
-        }
-        return deserialize(depositTokenSchema, this, data);
-    }
-
-    /**
-     * Deserialize the buffer to Object
-     * @param {Buffer} data
-     * @returns DepositTokenData Object 
-     */
-    decodeUnchecked(data) {
-        if (!(data instanceof Buffer)) {
-            throw new TypeError("Not a buffer.");
-        }
-        return deserializeUnchecked(depositSolSchema, this, data);
-    }
 }
 
 
@@ -50,7 +25,7 @@ export class DepositTokenData {
  * Data for "InstructionTypes.ProcessInitialize"
  */
 export class InitializeData {
-    constructor({ startTime, dcaAmount, dcaTime, minimumAmountOut }) {
+    constructor(startTime, dcaAmount, dcaTime, minimumAmountOut) {
         this.instruction = 1;
         this.startTime = startTime;
         this.dcaAmount = dcaAmount;
@@ -65,14 +40,15 @@ export class InitializeData {
     encode() {
         return Buffer.from(serialize(initializeSchema, this))
     }
-}
 
+
+}
 
 /**
  *  Data for "InstructionTypes.ProcessDepositSol"
  */
 export class DepositSolData {
-    constructor({ amount }) {
+    constructor(amount) {
         this.instruction = 2;
         this.amount = amount;
     }
@@ -124,7 +100,7 @@ export class SwapFromSolData {
  * Data for "InstructionTypes.ProcessWithdrawToken"
  */
 export class WithdrawTokenData {
-    constructor({ transferAmount }) {
+    constructor(transferAmount) {
         this.instruction = 5;
         this.transferAmount = transferAmount;
     }
@@ -142,7 +118,7 @@ export class WithdrawTokenData {
  * Data for "InstructionTypes.ProcessWithdrawSol"
  */
 export class WithdrawSolData {
-    constructor({ transferAmount }) {
+    constructor(transferAmount) {
         this.instruction = 6;
         this.transferAmount = transferAmount;
     }
@@ -160,7 +136,7 @@ export class WithdrawSolData {
  * Data for "InstructionTypes.ProcessFundToken"
  */
 export class FundTokenData {
-    constructor({ transferAmount }) {
+    constructor(transferAmount) {
         this.instruction = 7;
         this.transferAmount = transferAmount;
     }
@@ -178,7 +154,7 @@ export class FundTokenData {
  * Data for "InstructionTypes.ProcessFundSol"
  */
 export class FundSolData {
-    constructor({ transferAmount }) {
+    constructor(transferAmount) {
         this.instruction = 8;
         this.transferAmount = transferAmount;
     }

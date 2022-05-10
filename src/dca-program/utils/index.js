@@ -1,4 +1,4 @@
 export * from "./convertToLamports";
-export * from "./deriveDcaAddress";
-export * from "./deriveAssociatedTokenAddress";
+export * from "./findDcaAddress";
+export * from "./findAssociatedTokenAddress";
 export * from "./borshExtension";

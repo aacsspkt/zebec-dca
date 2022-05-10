@@ -1,7 +1,7 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import BN from "bn.js";
 import { DcaInstruction } from "./instructions";
-import { deriveDcaAddress, deriveAssociatedTokenAddress, convertToLamports } from "./utils";
+import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress } from "./utils";
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -35,9 +35,9 @@ export async function depositToken(connection, owner, mint, amount) {
         let dcaDataAccount = Keypair.generate();
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const _amount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -101,7 +101,7 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
 
         const ownerAddress = new PublicKey(owner);
         const dcaDataAddress = new PublicKey(dcaData);
-        const vaultAddress = deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
+        const vaultAddress = findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
         const _startTime = new BN(startTime);
         const _dcaAmount = convertToLamports(dcaAmount);
         const _dcaTime = new BN(dcaTime);
@@ -158,9 +158,9 @@ export async function depositSol(connection, owner, mint, amount) {
         const dcaDataAccount = Keypair.generate();
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const _amount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -219,9 +219,9 @@ export async function withdrawToken(connection, owner, dcaData, mint, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -278,9 +278,9 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -347,9 +347,9 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -406,9 +406,9 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
-        const [vaultAddress,] = await deriveDcaAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await deriveAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()

@@ -1,6 +1,6 @@
 import { PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
-import { DCA_PROGRAM_ID, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, SYSVAR_RENT_PUBKEY } from "./constants"
-import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, WithdrawSolData, WithdrawTokenData } from "./instructionData";
+import { DCA_PROGRAM_ID, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, SYSVAR_RENT_PUBKEY, SERUM_PROGRAM_ID, RAYDIUM_PROGRAM_ID } from "./constants"
+import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, SwapFromSolData, WithdrawSolData, WithdrawTokenData } from "./instructionData";
 import BN from "bn.js";
 import { isBN } from "bn.js";
 
@@ -586,8 +586,119 @@ export class DcaInstruction {
      * Generate Transaction Instruction that // todo
      * @returns TransactionInstruction
      */
-    static swapFromSol() {
-        throw new Error("Not Implemented");
+    static swapFromSol(raydiumProgramId, ammAddress, ammAuthorityAddress, ammOpenOrderAddress, ammTargetOrderAddress,
+        poolCoinTokenAddress, poolPcTokenAddress, serumMarketAddress, serumBidsAddress, serumAskAddress,
+        serumEventQueueAddress, serumCoinVaultAddress, serumPcVaultAddress, serumVaultSigner, vaultAddress,
+        destinationTokenAddress, mintAddress, ownerAddress, dcaDataAddress,) {
+
+        const data = new SwapFromSolData().encode();
+
+        return new TransactionInstruction({
+            keys: [
+                {
+                    pubkey: RAYDIUM_PROGRAM_ID,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammAuthorityAddress,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammOpenOrderAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammTargetOrderAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: poolCoinTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: poolPcTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: SERUM_PROGRAM_ID,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumMarketAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumBidsAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumAskAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumEventQueueAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumCoinVaultAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumPcVaultAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumVaultSigner,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: vaultAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: destinationTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: mintAddress,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ownerAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: dcaDataAddress,
+                    isWritable: true,
+                    isSigner: false
+                }
+            ],
+            programId: DCA_PROGRAM_ID,
+            data: data
+        });
     }
 
 

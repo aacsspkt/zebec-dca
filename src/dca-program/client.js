@@ -158,7 +158,7 @@ export async function depositSol(connection, owner, mint, amount) {
         const dcaDataAccount = Keypair.generate();
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
-        const [vaultAddress,] = await findDcaAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
         const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const _amount = convertToLamports(amount);

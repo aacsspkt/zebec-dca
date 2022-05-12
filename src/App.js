@@ -14,8 +14,8 @@ import {
   fundSol,
   fundToken,
   initialize,
-  deriveDcaAddress,
-  deriveAssociatedTokenAddress,
+  findDcaDerivedAddress,
+  findAssociatedTokenAddress,
   DCA_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -23,7 +23,7 @@ import {
   // swapFromSol,
   // swapToSol
 } from "./dca-program";
-import { convertToLamports } from './dca-program/utils/convertToLamports';
+import { convertToLamports } from './dca-program/utils';
 import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { serialize } from 'borsh';
 
@@ -87,9 +87,9 @@ function App() {
       };
 
       const dcaAccount = new Keypair();
-      const [vaultAddress,] = await deriveDcaAddress([fromAddress.toBuffer(), dcaAccount.publicKey.toBuffer()]);
-      const [senderAta,] = await deriveAssociatedTokenAddress(fromAddress, mintAddress);
-      const [vaultAta,] = await deriveAssociatedTokenAddress(vaultAddress, mintAddress);
+      const [vaultAddress,] = await findDcaDerivedAddress([fromAddress.toBuffer(), dcaAccount.publicKey.toBuffer()]);
+      const [senderAta,] = await findAssociatedTokenAddress(fromAddress, mintAddress);
+      const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
       const data = serialize(depositTokenSchema, new DepositTokenData(depositData));
 
       const txn = new Transaction();

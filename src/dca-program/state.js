@@ -36,7 +36,7 @@ export class DcaAccount {
     }
 
     /**
-     * 
+     * Decode buffer data to DcaAccount Object
      * @param { Buffer } data 
      * @returns 
      */

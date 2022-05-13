@@ -1,8 +1,28 @@
-import { PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
-import { DCA_PROGRAM_ID, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, SYSVAR_RENT_PUBKEY, SERUM_PROGRAM_ID, RAYDIUM_PROGRAM_ID } from "./constants"
-import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, SwapFromSolData, WithdrawSolData, WithdrawTokenData } from "./instructionData";
-import BN from "bn.js";
-import { isBN } from "bn.js";
+import {
+    PublicKey,
+    SystemProgram,
+    TransactionInstruction
+} from "@solana/web3.js";
+import {
+    DCA_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    SYSVAR_RENT_PUBKEY,
+    SERUM_PROGRAM_ID,
+    RAYDIUM_PROGRAM_ID
+} from "./constants"
+import {
+    DepositSolData,
+    DepositTokenData,
+    FundSolData,
+    FundTokenData,
+    InitializeData,
+    SwapFromSolData,
+    SwapToSolData,
+    WithdrawSolData,
+    WithdrawTokenData
+} from "./instructionData";
+import BN, { isBN } from "bn.js";
 
 
 /** 
@@ -29,7 +49,7 @@ export class DcaInstruction {
                 !(vaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !(amount instanceof BN)) {
-                throw new TypeError("Invalid argument types")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new DepositTokenData({ amount: amount }).encode();
@@ -114,8 +134,9 @@ export class DcaInstruction {
                 !(ownerAta instanceof PublicKey) &&
                 !(vaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
-                !(amount instanceof BN)) {
-                throw new TypeError("Invalid argument type")
+                !isBN(amount)
+            ) {
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new DepositSolData({ amount: amount }).encode();
@@ -204,7 +225,7 @@ export class DcaInstruction {
                 !isBN(dcaTime) &&
                 !isBN(minimumAmountOut)
             ) {
-                throw new TypeError("Invalid argument types.")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new InitializeData({
@@ -259,7 +280,7 @@ export class DcaInstruction {
                 !(vaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
-                throw new TypeError("Not a public key.")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new WithdrawTokenData({ transferAmount: transferAmount }).encode();
@@ -345,7 +366,7 @@ export class DcaInstruction {
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)
             ) {
-                throw new TypeError("Not a public key.")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new WithdrawSolData({ transferAmount: transferAmount }).encode();
@@ -431,7 +452,7 @@ export class DcaInstruction {
                 !(vaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
-                throw new TypeError("Not a public key.")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new FundTokenData({ transferAmount: transferAmount }).encode();
@@ -516,7 +537,7 @@ export class DcaInstruction {
                 !(vaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
-                throw new TypeError("Not a public key.")
+                throw new TypeError("Invalid argument type.")
             }
 
             const data = new FundSolData({ transferAmount: transferAmount }).encode();
@@ -583,13 +604,68 @@ export class DcaInstruction {
     }
 
     /**
-     * Generate Transaction Instruction that // todo
-     * @returns TransactionInstruction
+     * Generate Transaction Instruction that swap token from sol
+     * @param {PublicKey} ammAddress
+     * @param {PublicKey} ammAuthorityAddress
+     * @param {PublicKey} ammOpenOrderAddress
+     * @param {PublicKey} ammTargetOrderAddress
+     * @param {PublicKey} poolCoinTokenAddress
+     * @param {PublicKey} poolPcTokenAddress
+     * @param {PublicKey} serumMarketAddress
+     * @param {PublicKey} serumBidsAddress
+     * @param {PublicKey} serumAskAddress
+     * @param {PublicKey} serumEventQueueAddress
+     * @param {PublicKey} serumCoinVaultAddress
+     * @param {PublicKey} serumPcVaultAddress
+     * @param {PublicKey} serumVaultSigner
+     * @param {PublicKey} sourceTokenAddress
+     * @param {PublicKey} destinationTokenAddress
+     * @param {PublicKey} mintAddress
+     * @param {PublicKey} ownerAddress
+     * @param {PublicKey} dcaDataAddress
      */
-    static swapFromSol(raydiumProgramId, ammAddress, ammAuthorityAddress, ammOpenOrderAddress, ammTargetOrderAddress,
-        poolCoinTokenAddress, poolPcTokenAddress, serumMarketAddress, serumBidsAddress, serumAskAddress,
-        serumEventQueueAddress, serumCoinVaultAddress, serumPcVaultAddress, serumVaultSigner, vaultAddress,
-        destinationTokenAddress, mintAddress, ownerAddress, dcaDataAddress,) {
+    static swapFromSol(
+        ammAddress,
+        ammAuthorityAddress,
+        ammOpenOrderAddress,
+        ammTargetOrderAddress,
+        poolCoinTokenAddress,
+        poolPcTokenAddress,
+        serumMarketAddress,
+        serumBidsAddress,
+        serumAskAddress,
+        serumEventQueueAddress,
+        serumCoinVaultAddress,
+        serumPcVaultAddress,
+        serumVaultSigner,
+        sourceTokenAddress,
+        destinationTokenAddress,
+        mintAddress,
+        ownerAddress,
+        dcaDataAddress
+    ) {
+        if (
+            !(ammAddress instanceof PublicKey) &&
+            !(ammAuthorityAddress instanceof PublicKey) &&
+            !(ammOpenOrderAddress instanceof PublicKey) &&
+            !(ammTargetOrderAddress instanceof PublicKey) &&
+            !(poolCoinTokenAddress instanceof PublicKey) &&
+            !(poolPcTokenAddress instanceof PublicKey) &&
+            !(serumMarketAddress instanceof PublicKey) &&
+            !(serumBidsAddress instanceof PublicKey) &&
+            !(serumAskAddress instanceof PublicKey) &&
+            !(serumEventQueueAddress instanceof PublicKey) &&
+            !(serumCoinVaultAddress instanceof PublicKey) &&
+            !(serumPcVaultAddress instanceof PublicKey) &&
+            !(serumVaultSigner instanceof PublicKey) &&
+            !(sourceTokenAddress instanceof PublicKey) &&
+            !(destinationTokenAddress instanceof PublicKey) &&
+            !(mintAddress instanceof PublicKey) &&
+            !(ownerAddress instanceof PublicKey) &&
+            !(dcaDataAddress instanceof PublicKey)
+        ) {
+            throw new TypeError("Invalid argument type.")
+        }
 
         const data = new SwapFromSolData().encode();
 
@@ -671,7 +747,7 @@ export class DcaInstruction {
                     isSigner: false
                 },
                 {
-                    pubkey: vaultAddress,
+                    pubkey: sourceTokenAddress,
                     isWritable: true,
                     isSigner: false
                 },
@@ -703,10 +779,176 @@ export class DcaInstruction {
 
 
     /**
-     * Generate Transaction Instruction that // todo
-     * @returns TransactionInstruction
+     * Generate Transaction Instruction that swap token to sol
+     * @param {PublicKey} ammAddress
+     * @param {PublicKey} ammAuthorityAddress
+     * @param {PublicKey} ammOpenOrderAddress
+     * @param {PublicKey} ammTargetOrderAddress
+     * @param {PublicKey} poolCoinTokenAddress
+     * @param {PublicKey} poolPcTokenAddress
+     * @param {PublicKey} serumMarketAddress
+     * @param {PublicKey} serumBidsAddress
+     * @param {PublicKey} serumAskAddress
+     * @param {PublicKey} serumEventQueueAddress
+     * @param {PublicKey} serumCoinVaultAddress
+     * @param {PublicKey} serumPcVaultAddress
+     * @param {PublicKey} serumVaultSigner
+     * @param {PublicKey} sourceTokenAddress
+     * @param {PublicKey} destinationTokenAddress
+     * @param {PublicKey} mintAddress
+     * @param {PublicKey} ownerAddress
+     * @param {PublicKey} dcaDataAddress
      */
-    static swapToSol() {
-        throw new Error("Not Implemented");
+    static swapToSol(
+        ammAddress,
+        ammAuthorityAddress,
+        ammOpenOrderAddress,
+        ammTargetOrderAddress,
+        poolCoinTokenAddress,
+        poolPcTokenAddress,
+        serumMarketAddress,
+        serumBidsAddress,
+        serumAskAddress,
+        serumEventQueueAddress,
+        serumCoinVaultAddress,
+        serumPcVaultAddress,
+        serumVaultSigner,
+        sourceTokenAddress,
+        destinationTokenAddress,
+        mintAddress,
+        ownerAddress,
+        dcaDataAddress,
+    ) {
+        if (
+            !(ammAddress instanceof PublicKey) &&
+            !(ammAuthorityAddress instanceof PublicKey) &&
+            !(ammOpenOrderAddress instanceof PublicKey) &&
+            !(ammTargetOrderAddress instanceof PublicKey) &&
+            !(poolCoinTokenAddress instanceof PublicKey) &&
+            !(poolPcTokenAddress instanceof PublicKey) &&
+            !(serumMarketAddress instanceof PublicKey) &&
+            !(serumBidsAddress instanceof PublicKey) &&
+            !(serumAskAddress instanceof PublicKey) &&
+            !(serumEventQueueAddress instanceof PublicKey) &&
+            !(serumCoinVaultAddress instanceof PublicKey) &&
+            !(serumPcVaultAddress instanceof PublicKey) &&
+            !(serumVaultSigner instanceof PublicKey) &&
+            !(sourceTokenAddress instanceof PublicKey) &&
+            !(destinationTokenAddress instanceof PublicKey) &&
+            !(mintAddress instanceof PublicKey) &&
+            !(ownerAddress instanceof PublicKey) &&
+            !(dcaDataAddress instanceof PublicKey)
+        ) {
+            throw new TypeError("Invalid argument type.")
+        }
+
+        const data = new SwapToSolData().encode();
+
+        return new TransactionInstruction({
+            keys: [
+                {
+                    pubkey: RAYDIUM_PROGRAM_ID,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammAuthorityAddress,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammOpenOrderAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: ammTargetOrderAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: poolCoinTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: poolPcTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: SERUM_PROGRAM_ID,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumMarketAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumBidsAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumAskAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumEventQueueAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumCoinVaultAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumPcVaultAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: serumVaultSigner,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: sourceTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: destinationTokenAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: mintAddress,
+                    isWritable: false,
+                    isSigner: false
+                },
+                {
+                    pubkey: ownerAddress,
+                    isWritable: true,
+                    isSigner: false
+                },
+                {
+                    pubkey: dcaDataAddress,
+                    isWritable: true,
+                    isSigner: false
+                }
+            ],
+            programId: DCA_PROGRAM_ID,
+            data: data
+        });
     }
 } 

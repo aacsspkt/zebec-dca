@@ -66,7 +66,7 @@ export class DepositSolData {
  * Data for "InstructionTypes.ProcessSwapToSol"
  */
 export class SwapToSolData {
-    constructor(args) {
+    constructor() {
         this.instruction = 3;
     }
 
@@ -83,7 +83,7 @@ export class SwapToSolData {
  * Data for "IntructionTypes.ProcessSwapFromSol"
  */
 export class SwapFromSolData {
-    constructor(args) {
+    constructor() {
         this.instruction = 4;
     }
 

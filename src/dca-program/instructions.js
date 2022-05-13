@@ -52,7 +52,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new DepositTokenData({ amount: amount }).encode();
+            const data = new DepositTokenData(amount).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -139,7 +139,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new DepositSolData({ amount: amount }).encode();
+            const data = new DepositSolData(amount).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -228,12 +228,12 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new InitializeData({
-                startTime: startTime,
-                dcaAmount: dcaAmount,
-                dcaTime: dcaTime,
-                minimumAmountOut: minimumAmountOut
-            }).encode();
+            const data = new InitializeData(
+                startTime,
+                dcaAmount,
+                dcaTime,
+                minimumAmountOut
+            ).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -283,7 +283,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new WithdrawTokenData({ transferAmount: transferAmount }).encode();
+            const data = new WithdrawTokenData(transferAmount).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -369,7 +369,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new WithdrawSolData({ transferAmount: transferAmount }).encode();
+            const data = new WithdrawSolData(transferAmount).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -455,7 +455,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new FundTokenData({ transferAmount: transferAmount }).encode();
+            const data = new FundTokenData(transferAmount).encode();
 
             return new TransactionInstruction({
                 keys: [
@@ -540,7 +540,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
-            const data = new FundSolData({ transferAmount: transferAmount }).encode();
+            const data = new FundSolData(transferAmount).encode();
 
             return new TransactionInstruction({
                 keys: [

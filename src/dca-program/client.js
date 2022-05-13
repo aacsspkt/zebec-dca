@@ -51,7 +51,7 @@ export async function depositToken(connection, owner, mint, amount) {
                 _amount
             ));
 
-        txn.feePayer = owner;
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
 
@@ -173,7 +173,7 @@ export async function depositSol(connection, owner, mint, amount) {
                 dcaDataAccount.publicKey,
                 _amount
             ));
-        txn.feePayer = new PublicKey(ownerAddress);
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
 
@@ -293,7 +293,7 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
                 dcaDataAddress,
                 transferAmount
             ));
-        txn.feePayer = new PublicKey(ownerAddress);
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);
@@ -362,7 +362,7 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
                 dcaDataAddress,
                 transferAmount
             ));
-        txn.feePayer = new PublicKey(ownerAddress);
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);
@@ -421,7 +421,7 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
                 dcaDataAddress,
                 transferAmount
             ));
-        txn.feePayer = new PublicKey(ownerAddress);
+        txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTxn = await window.solana.signTransaction(txn);

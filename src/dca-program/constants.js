@@ -23,4 +23,4 @@ export const connection = new Connection(clusterApiUrl("devnet"));
 export const RAYDIUM_PROGRAM_ID = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC"); // liquidity pool amm
 
 
-export const SERUM_PROGRAM_ID = new PublicKey("");
+export const SERUM_PROGRAM_ID = new PublicKey("SerumSqm3PWpKcHva3sxfUPXsYaE53czAbWtgAaisCf");

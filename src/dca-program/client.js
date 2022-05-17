@@ -1,7 +1,9 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import BN from "bn.js";
+import { } from "@raydium-io/raydium-sdk"
 import { DcaInstruction } from "./instructions";
 import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress } from "./utils";
+
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -73,7 +75,7 @@ export async function depositToken(connection, owner, mint, amount) {
 
 /**
  * Intialize dca process
- * @param {Connection} The connection The Connection of solana json rpc network
+ * @param {Connection} connection The connection The Connection of solana json rpc network
  * @param {string} owner The address of the owner who initialize dca
  * @param {string} dcaData The address of the account which store dca state
  * @param {string} mint The address of the token mint
@@ -311,9 +313,70 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
     }
 }
 
+/**
+ * Swap token from sol
+ * @param {Connection} connection The connection The Connection of solana json rpc network
+ * @param {string} owner The address of the owner who initialize dca
+ * @param {string} mint The address of token mint
+ * @param {string} dcaData The address of the account which store dca state
+ */
+export async function swapFromSol(connection, owner, mint, dcaData) {
+    try {
+        if (!connection && !owner && !mint && !dcaData) {
+            throw new ReferenceError("Missing arguments.");
+        }
 
-export async function swapFromSol(args) {
-    throw new Error("Not Implemented");
+        if (!(connection instanceof Connection) &&
+            typeof owner != "string" &&
+            typeof mint != "string" &&
+            typeof dcaData != "string"
+        ) {
+            throw new TypeError("Invalid argument type.");
+        }
+
+
+
+        const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
+        const dcaDataAddress = new PublicKey(dcaData);
+
+        let txn = new Transaction()
+            .add(DcaInstruction.swapFromSol(
+                // ammAddress,
+                // ammAuthorityAddress,
+                // ammOpenOrderAddress,
+                // ammTargetOrderAddress,
+                // poolCoinTokenAddress,
+                // poolPcTokenAddress,
+                // serumMarketAddress,
+                // serumBidsAddress,
+                // serumAskAddress,
+                // serumEventQueueAddress,
+                // serumCoinVaultAddress,
+                // serumVaultAddress,
+                // serumVaultSigner,
+                // vaultAddress,
+                // destinationAddress,
+                mintAddress,
+                ownerAddress,
+                dcaDataAddress
+            ));
+        txn.feePayer = ownerAddress;
+        txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        const signedTxn = await window.solana.signTransaction(txn);
+        const signature = await connection.sendRawTransaction(signedTxn.serialize());
+        await connection.confirmTransaction(signature, "confirmed");
+
+        return {
+            status: "success",
+            data: {
+                signature: signature,
+            }
+        }
+    } catch (e) {
+        throw e;
+    }
 }
 
 
@@ -341,7 +404,7 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
             typeof dcaData != "string" &&
             typeof amount != "string"
         ) {
-            throw new TypeError("Invalid argument types.");
+            throw new TypeError("Invalid argument type.");
         }
 
         const ownerAddress = new PublicKey(owner);

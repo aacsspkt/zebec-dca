@@ -1,38 +1,35 @@
 
 import { useState } from 'react';
 import './App.css';
-// import { extendBorsh } from "./dca-program/utils/borshExtension";
-
+import { Liquidity } from "@raydium-io/raydium-sdk"
 
 import {
   connection,
   getProvider,
-  // depositToken,
+  depositToken,
   depositSol,
   withdrawSol,
   withdrawToken,
   fundSol,
   fundToken,
   initialize,
-  depositToken
   // swapFromSol,
   // swapToSol
 } from "./dca-program";
 
 
-
 function App() {
-
 
   const [dcaAddress, setDcaAddress] = useState("");
 
   const onDepositTokenClick = async () => {
     try {
-      const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
-
-      const { status, data } = await depositToken(connection, owner, mint, amount);
+      const { status, data } = await depositToken(
+        connection,
+        window.solana.publicKey.toBase58(),
+        "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY",
+        0.5
+      );
       console.log(status);
       console.log(data.signature);
       console.log(data.dcaDataAddress);
@@ -45,11 +42,12 @@ function App() {
 
   const onDepositSolClick = async () => {
     try {
-      const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
-
-      const { status, data } = await depositSol(connection, owner, mint, amount);
+      const { status, data } = await depositSol(
+        connection,
+        window.solana.publicKey.toBase58(),
+        "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY",
+        0.5
+      );
       console.log(status);
       console.log(data.signature);
       console.log(data.dcaDataAddress);
@@ -65,10 +63,12 @@ function App() {
 
   const onWithdrawTokenClick = async () => {
     try {
-      const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
-      const { status, data } = await withdrawToken(connection, owner, dcaAddress, mint, amount);
+      const { status, data } = await withdrawToken(
+        connection,
+        window.solana.publicKey.toBase58(),
+        dcaAddress,
+        "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY",
+        0.5);
       console.log(status);
       console.log(data.signature);
     } catch (e) {
@@ -142,6 +142,13 @@ function App() {
     }
   }
 
+  // const [keys, setPoolKeys] = useState([]);
+  const getAllKeys = async () => {
+    const allPoolKeys = await Liquidity.fetchAllPoolKeys(connection);
+    console.log(allPoolKeys);
+  }
+  // const poolKeys = allPoolKeys.find((item) => item.id.toBase58() === RAY_USDC)
+  getAllKeys();
   return (
     <div className="App">
       <button className='btn' onClick={getProvider}>Connect</button>

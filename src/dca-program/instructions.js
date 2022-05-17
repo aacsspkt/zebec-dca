@@ -8,8 +8,8 @@ import {
     TOKEN_PROGRAM_ID,
     ASSOCIATED_TOKEN_PROGRAM_ID,
     SYSVAR_RENT_PUBKEY,
-    SERUM_PROGRAM_ID,
-    RAYDIUM_PROGRAM_ID
+    SERUM_PROGRAM_ID_V3,
+    LIQUIDITY_PROGRAM_ID_V4
 } from "./constants"
 import {
     DepositSolData,
@@ -672,7 +672,7 @@ export class DcaInstruction {
         return new TransactionInstruction({
             keys: [
                 {
-                    pubkey: RAYDIUM_PROGRAM_ID,
+                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
                     isWritable: false,
                     isSigner: false
                 },
@@ -707,7 +707,7 @@ export class DcaInstruction {
                     isSigner: false
                 },
                 {
-                    pubkey: SERUM_PROGRAM_ID,
+                    pubkey: SERUM_PROGRAM_ID_V3,
                     isWritable: false,
                     isSigner: false
                 },
@@ -847,7 +847,7 @@ export class DcaInstruction {
         return new TransactionInstruction({
             keys: [
                 {
-                    pubkey: RAYDIUM_PROGRAM_ID,
+                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
                     isWritable: false,
                     isSigner: false
                 },
@@ -882,7 +882,7 @@ export class DcaInstruction {
                     isSigner: false
                 },
                 {
-                    pubkey: SERUM_PROGRAM_ID,
+                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
                     isWritable: false,
                     isSigner: false
                 },

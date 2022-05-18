@@ -1,8 +1,11 @@
 import { PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
 
 export {
-    /** The  id of Token Program. */
+    /** The id of Token Program. */
     TOKEN_PROGRAM_ID,
+
+    /** The public key of wrapped SOL */
+    NATIVE_MINT,
 
     /** The id of Associated Token Program. */
     ASSOCIATED_TOKEN_PROGRAM_ID
@@ -19,9 +22,12 @@ export const DCA_PROGRAM_ID = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tz
 /** Json RPC client to communicate with Solana blockchain */
 export const connection = new Connection(clusterApiUrl("devnet"));
 
-/** The id of raydium program liquidity pool amm */
-export { LIQUIDITY_PROGRAM_ID_V4 } from "@raydium-io/raydium-sdk"
-export const MAINNET_RAYDIUM_PROGRAM_ID_V4 = new PublicKey("675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"); // Radium Liquidity Pool V4
+
+export {
+    /** The id of raydium program liquidity pool id */
+    LIQUIDITY_PROGRAM_ID_V4
+} from "@raydium-io/raydium-sdk"
+/** Devnet raydium program liquidity pool id */
 export const DEVNET_RAYDIUM_PROGRAM_ID_V4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
 
 export {
@@ -30,5 +36,3 @@ export {
 } from "@raydium-io/raydium-sdk"
 /** Devnet serum program id */
 export const DEVNET_SERUM_PROGRAM_ID_V3 = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin");
-
-

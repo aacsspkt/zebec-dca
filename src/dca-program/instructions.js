@@ -1,7 +1,7 @@
 import {
     PublicKey,
     SystemProgram,
-    TransactionInstruction
+    TransactionInstruction,
 } from "@solana/web3.js";
 import {
     DCA_PROGRAM_ID,
@@ -882,7 +882,7 @@ export class DcaInstruction {
                     isSigner: false
                 },
                 {
-                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
+                    pubkey: SERUM_PROGRAM_ID_V3,
                     isWritable: false,
                     isSigner: false
                 },

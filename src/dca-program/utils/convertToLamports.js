@@ -1,4 +1,5 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import BigNumber from "bignumber.js";
 import BN from "bn.js";
 
 
@@ -14,10 +15,11 @@ export function convertToLamports(amount) {
     if (amount <= 0) {
         throw new RangeError("amount must be greater than 0");
     }
-    const amt = new BN(amount);
-    const lamports = amt.mul(new BN(LAMPORTS_PER_SOL));
-    if (lamports.gt(new BN("18446744073709551615"))) {
+    const lmpPerSol = new BigNumber(LAMPORTS_PER_SOL);
+    const tempAmount = lmpPerSol.multipliedBy(new BigNumber(amount));
+    const _amount = new BN(tempAmount.toFixed())
+    if (_amount.gt(new BN("18446744073709551615"))) {
         throw new RangeError("lamports of given amount doesn't fit in unsigned 64-bit integer.");
     }
-    return lamports;
+    return _amount;
 }

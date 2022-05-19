@@ -34,11 +34,10 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit non native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
+     * @param {PublicKey} mintAddress The address of token mint which is used in dca process     * @param {PublicKey} ownerAta The associated token address of ownerAddress
      * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
-     * @param {BN} amount The amount to deposit
+     * @param {BN} amount The amount of token to deposit
      */
     static depositToken(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, amount) {
         try {
@@ -120,11 +119,11 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
+     * @param {PublicKey} mintAddress The address of expected token mint after dca process
      * @param {PublicKey} ownerAta The associated token address of ownerAddress
      * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
-     * @param {BN} amount The amount to deposit
+     * @param {BN} amount The amount of sol to deposit
      */
     static depositSol(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, amount) {
         try {
@@ -140,6 +139,7 @@ export class DcaInstruction {
             }
 
             const data = new DepositSolData(amount).encode();
+            console.log(data)
 
             return new TransactionInstruction({
                 keys: [
@@ -506,7 +506,7 @@ export class DcaInstruction {
                     },
                     {
                         pubkey: dcaDataAddress,
-                        isSigner: true,
+                        isSigner: false,
                         isWritable: true
                     }
                 ],
@@ -591,7 +591,7 @@ export class DcaInstruction {
                     },
                     {
                         pubkey: dcaDataAddress,
-                        isSigner: true,
+                        isSigner: false,
                         isWritable: true
                     }
                 ],

@@ -58,7 +58,7 @@ export class DepositSolData {
      * @returns Buffer | UInt8Array  of this object
      */
     encode() {
-        return Buffer.from(serialize(depositSolSchema, this))
+        return Buffer.from(serialize(depositSolSchema, this));
     }
 }
 

@@ -1,10 +1,12 @@
+import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { serialize } from 'borsh';
 import './App.css';
 
 import {
   connection,
   getProvider,
   depositToken,
-  depositSol,
+  // depositSol,
   withdrawSol,
   withdrawToken,
   fundSol,
@@ -12,8 +14,18 @@ import {
   initialize,
   swapFromSol,
   swapToSol,
-  fetchAllPoolKeys
+  fetchAllPoolKeys,
+  extendBorsh,
+  findDcaDerivedAddress,
+  findAssociatedTokenAddress,
+  convertToLamports,
+  DCA_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  SYSVAR_RENT_PUBKEY,
+  TOKEN_PROGRAM_ID
 } from "./dca-program";
+
+extendBorsh();
 
 function App() {
 
@@ -39,22 +51,129 @@ function App() {
   }
 
 
-  const onDepositSolClick = async () => {
+  // const onDepositSolClick = async () => {
+  //   try {
+  //     const owner = window.solana.publicKey.toBase58();
+  //     const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
+  //     const amount = 0.5;
+
+  //     const { status, data } = await depositSol(
+  //       connection,
+  //       owner,
+  //       mint,
+  //       amount
+  //     );
+
+  //     console.log(status);
+  //     console.log(data.signature);
+  //     console.log(data.dcaDataAddress);
+
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
+
+  class DepositSolData {
+    constructor(amount) {
+      this.instruction = 2;
+      this.amount = amount;
+    }
+  }
+
+  const depositSolSchema = new Map([
+    [
+      DepositSolData,
+      {
+        kind: "struct",
+        fields: [
+          ["instruction", "u8"],
+          ["amount", "u64"],
+        ],
+      }
+    ]
+  ]);
+
+  const onRegularStyleDepositSolClick = async () => {
     try {
-      const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
+      let dcaDataAccount = Keypair.generate();
+      const ownerAddress = window.solana.publicKey;
+      const mintAddress = new PublicKey("6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY");
+      const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
+      const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+      const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+      const amount = convertToLamports(0.5);
 
-      const { status, data } = await depositSol(
-        connection,
-        owner,
-        mint,
-        amount
-      );
+      const data = serialize(depositSolSchema, new DepositSolData(amount));
 
-      console.log(status);
-      console.log(data.signature);
-      console.log(data.dcaDataAddress);
+      let txn = new Transaction()
+        .add(new TransactionInstruction({
+          keys: [
+            {
+              pubkey: ownerAddress,
+              isSigner: true,
+              isWritable: true
+            },
+            {
+              pubkey: vaultAddress,
+              isSigner: false,
+              isWritable: true
+            },
+            {
+              pubkey: TOKEN_PROGRAM_ID,
+              isSigner: false,
+              isWritable: false
+            },
+            {
+              pubkey: mintAddress,
+              isSigner: false,
+              isWritable: true
+            },
+            {
+              pubkey: SystemProgram.programId,
+              isSigner: false,
+              isWritable: false
+            },
+            {
+              pubkey: SYSVAR_RENT_PUBKEY,
+              isSigner: false,
+              isWritable: false
+            },
+            {
+              pubkey: ownerAta,
+              isSigner: false,
+              isWritable: true
+            },
+            {
+              pubkey: vaultAta,
+              isSigner: false,
+              isWritable: true
+            },
+            {
+              pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
+              isSigner: false,
+              isWritable: false
+            },
+            {
+              pubkey: dcaDataAccount.publicKey,
+              isSigner: true,
+              isWritable: true
+            },
+          ],
+          programId: DCA_PROGRAM_ID,
+          data: data
+        }));
+
+      txn.feePayer = ownerAddress;
+      txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      txn.partialSign(dcaDataAccount);
+      console.log(txn);
+
+      const signedTxn = await window.solana.signTransaction(txn);
+      console.log(signedTxn);
+      const signature = await connection.sendRawTransaction(signedTxn.serialize());
+      await connection.confirmTransaction(signature, "confirmed");
+
+      console.log(signature);
 
     } catch (e) {
       console.log(e);
@@ -236,7 +355,7 @@ function App() {
     <div className="App">
       <button className='btn' onClick={getProvider}>Connect</button>
       <button className='btn' onClick={onDepositTokenClick}>Deposit Token</button>
-      <button className='btn' onClick={onDepositSolClick}>Deposit Sol</button>
+      <button className='btn' onClick={onRegularStyleDepositSolClick}>Deposit Sol</button>
       <button className='btn' onClick={onInitializeClick}>Initialize</button>
       <button className='btn' onClick={onWithdrawTokenClick}>Withdraw Token</button>
       <button className='btn' onClick={onWithdrawSolClick}>Withdraw Sol</button>

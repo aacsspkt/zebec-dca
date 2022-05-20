@@ -1,5 +1,4 @@
 import { serialize, } from "borsh";
-import { extendBorsh } from "./utils/borshExtension";
 
 /** 
  * Data for "InstructionTypes.ProcessDepositToken"
@@ -58,7 +57,7 @@ export class DepositSolData {
      * @returns Buffer | UInt8Array  of this object
      */
     encode() {
-        return Buffer.from(serialize(depositSolSchema, this));
+        return serialize(depositSolSchema, this);
     }
 }
 
@@ -294,5 +293,3 @@ const fundSolSchema = new Map([
         }
     ]
 ]);
-
-extendBorsh();

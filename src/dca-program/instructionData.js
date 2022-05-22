@@ -57,7 +57,7 @@ export class DepositSolData {
      * @returns Buffer | UInt8Array  of this object
      */
     encode() {
-        return serialize(depositSolSchema, this);
+        return Buffer.from(serialize(depositSolSchema, this));
     }
 }
 
@@ -182,7 +182,7 @@ const depositTokenSchema = new Map([
 ]);
 
 
-const initializeSchema = new Map([
+export const initializeSchema = new Map([
     [
         InitializeData,
         {
@@ -199,7 +199,7 @@ const initializeSchema = new Map([
 ])
 
 
-const depositSolSchema = new Map([
+export const depositSolSchema = new Map([
     [
         DepositSolData,
         {
@@ -213,7 +213,7 @@ const depositSolSchema = new Map([
 ]);
 
 
-const swapToSolSchema = new Map([
+export const swapToSolSchema = new Map([
     [
         SwapToSolData,
         {
@@ -226,7 +226,7 @@ const swapToSolSchema = new Map([
 ]);
 
 
-const swapFromSolSchema = new Map([
+export const swapFromSolSchema = new Map([
     [
         SwapFromSolData,
         {
@@ -239,7 +239,7 @@ const swapFromSolSchema = new Map([
 ]);
 
 
-const withdrawTokenSchema = new Map([
+export const withdrawTokenSchema = new Map([
     [
         WithdrawTokenData,
         {
@@ -253,7 +253,7 @@ const withdrawTokenSchema = new Map([
 ]);
 
 
-const withdrawSolSchema = new Map([
+export const withdrawSolSchema = new Map([
     [
         WithdrawSolData,
         {
@@ -267,7 +267,7 @@ const withdrawSolSchema = new Map([
 ]);
 
 
-const fundTokenSchema = new Map([
+export const fundTokenSchema = new Map([
     [
         FundTokenData,
         {
@@ -281,7 +281,7 @@ const fundTokenSchema = new Map([
 ]);
 
 
-const fundSolSchema = new Map([
+export const fundSolSchema = new Map([
     [
         FundSolData,
         {

@@ -1,4 +1,5 @@
 import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
+import BN from 'bn.js';
 import { serialize } from 'borsh';
 import './App.css';
 
@@ -18,7 +19,6 @@ import {
   extendBorsh,
   findDcaDerivedAddress,
   findAssociatedTokenAddress,
-  convertToLamports,
   DCA_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   SYSVAR_RENT_PUBKEY,
@@ -28,7 +28,6 @@ import {
 extendBorsh();
 
 function App() {
-
   const onDepositTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
@@ -88,10 +87,11 @@ function App() {
         fields: [
           ["instruction", "u8"],
           ["amount", "u64"],
-        ],
+        ]
       }
     ]
   ]);
+
 
   const onRegularStyleDepositSolClick = async () => {
     try {
@@ -101,8 +101,7 @@ function App() {
       const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
       const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
       const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-      const amount = convertToLamports(0.5);
-
+      const amount = new BN("500000000");
       const data = serialize(depositSolSchema, new DepositSolData(amount));
 
       let txn = new Transaction()
@@ -131,7 +130,7 @@ function App() {
             {
               pubkey: SystemProgram.programId,
               isSigner: false,
-              isWritable: false
+              isWritable: true
             },
             {
               pubkey: SYSVAR_RENT_PUBKEY,

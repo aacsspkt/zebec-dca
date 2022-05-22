@@ -166,7 +166,7 @@ export class DcaInstruction {
                     {
                         pubkey: SystemProgram.programId,
                         isSigner: false,
-                        isWritable: false
+                        isWritable: true
                     },
                     {
                         pubkey: SYSVAR_RENT_PUBKEY,

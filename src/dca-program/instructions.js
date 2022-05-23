@@ -23,6 +23,10 @@ import {
     WithdrawTokenData
 } from "./instructionData";
 import BN, { isBN } from "bn.js";
+import { AccountMetaBuilder } from "./utils";
+
+
+
 
 
 /** 
@@ -34,7 +38,8 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit non native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint which is used in dca process     * @param {PublicKey} ownerAta The associated token address of ownerAddress
+     * @param {PublicKey} mintAddress The address of token mint which is used in dca process     
+     * @param {PublicKey} ownerAta The associated token address of ownerAddress
      * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} amount The amount of token to deposit
@@ -55,56 +60,16 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -139,60 +104,19 @@ export class DcaInstruction {
             }
 
             const data = new DepositSolData(amount).encode();
-            console.log(data)
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -237,21 +161,9 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true,
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: true,
-                        isWritable: true
-                    }
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -287,56 +199,16 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: true,
-                        isWritable: true
-                    }
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -373,56 +245,16 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: true,
-                        isWritable: true
-                    }
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -459,56 +291,16 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: false,
-                        isWritable: true
-                    }
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -544,56 +336,16 @@ export class DcaInstruction {
 
             return new TransactionInstruction({
                 keys: [
-                    {
-                        pubkey: ownerAddress,
-                        isSigner: true,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: mintAddress,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: SystemProgram.programId,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: SYSVAR_RENT_PUBKEY,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: ownerAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: vaultAta,
-                        isSigner: false,
-                        isWritable: true
-                    },
-                    {
-                        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-                        isSigner: false,
-                        isWritable: false
-                    },
-                    {
-                        pubkey: dcaDataAddress,
-                        isSigner: false,
-                        isWritable: true
-                    }
+                    AccountMetaBuilder.writable(ownerAddress, true),
+                    AccountMetaBuilder.writable(vaultAddress, false),
+                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.readonly(SystemProgram.programId, false),
+                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.writable(ownerAta, false),
+                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -671,106 +423,26 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
-                {
-                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammAuthorityAddress,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammOpenOrderAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammTargetOrderAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: poolCoinTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: poolPcTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: SERUM_PROGRAM_ID_V3,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumMarketAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumBidsAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumAskAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumEventQueueAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumCoinVaultAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumPcVaultAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumVaultSigner,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: sourceTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: destinationTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: mintAddress,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ownerAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: dcaDataAddress,
-                    isWritable: true,
-                    isSigner: false
-                }
+                AccountMetaBuilder.readonly(LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.writable(ammAddress, false),
+                AccountMetaBuilder.readonly(ammAuthorityAddress, false),
+                AccountMetaBuilder.writable(ammOpenOrderAddress, false),
+                AccountMetaBuilder.writable(ammTargetOrderAddress, false),
+                AccountMetaBuilder.writable(poolCoinTokenAddress, false),
+                AccountMetaBuilder.writable(poolPcTokenAddress, false),
+                AccountMetaBuilder.readonly(SERUM_PROGRAM_ID_V3, false),
+                AccountMetaBuilder.writable(serumMarketAddress, false),
+                AccountMetaBuilder.writable(serumBidsAddress, false),
+                AccountMetaBuilder.writable(serumAskAddress, false),
+                AccountMetaBuilder.writable(serumEventQueueAddress, false),
+                AccountMetaBuilder.writable(serumCoinVaultAddress, false),
+                AccountMetaBuilder.writable(serumPcVaultAddress, false),
+                AccountMetaBuilder.readonly(serumVaultSigner, false),
+                AccountMetaBuilder.writable(sourceTokenAddress, false),
+                AccountMetaBuilder.writable(destinationTokenAddress, false),
+                AccountMetaBuilder.readonly(mintAddress, false),
+                AccountMetaBuilder.writable(ownerAddress, false),
+                AccountMetaBuilder.writable(dcaDataAddress, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data
@@ -846,106 +518,26 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
-                {
-                    pubkey: LIQUIDITY_PROGRAM_ID_V4,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammAuthorityAddress,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammOpenOrderAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: ammTargetOrderAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: poolCoinTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: poolPcTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: SERUM_PROGRAM_ID_V3,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumMarketAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumBidsAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumAskAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumEventQueueAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumCoinVaultAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumPcVaultAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: serumVaultSigner,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: sourceTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: destinationTokenAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: mintAddress,
-                    isWritable: false,
-                    isSigner: false
-                },
-                {
-                    pubkey: ownerAddress,
-                    isWritable: true,
-                    isSigner: false
-                },
-                {
-                    pubkey: dcaDataAddress,
-                    isWritable: true,
-                    isSigner: false
-                }
+                AccountMetaBuilder.readonly(LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.writable(ammAddress, false),
+                AccountMetaBuilder.readonly(ammAuthorityAddress, false),
+                AccountMetaBuilder.writable(ammOpenOrderAddress, false),
+                AccountMetaBuilder.writable(ammTargetOrderAddress, false),
+                AccountMetaBuilder.writable(poolCoinTokenAddress, false),
+                AccountMetaBuilder.writable(poolPcTokenAddress, false),
+                AccountMetaBuilder.readonly(SERUM_PROGRAM_ID_V3, false),
+                AccountMetaBuilder.writable(serumMarketAddress, false),
+                AccountMetaBuilder.writable(serumBidsAddress, false),
+                AccountMetaBuilder.writable(serumAskAddress, false),
+                AccountMetaBuilder.writable(serumEventQueueAddress, false),
+                AccountMetaBuilder.writable(serumCoinVaultAddress, false),
+                AccountMetaBuilder.writable(serumPcVaultAddress, false),
+                AccountMetaBuilder.readonly(serumVaultSigner, false),
+                AccountMetaBuilder.writable(sourceTokenAddress, false),
+                AccountMetaBuilder.writable(destinationTokenAddress, false),
+                AccountMetaBuilder.readonly(mintAddress, false),
+                AccountMetaBuilder.writable(ownerAddress, false),
+                AccountMetaBuilder.writable(dcaDataAddress, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data

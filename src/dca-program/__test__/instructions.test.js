@@ -7,8 +7,6 @@ import { DcaInstruction } from "../instructions";
 import { findAssociatedTokenAddress, findDcaDerivedAddress } from "../utils";
 
 
-
-
 describe("deposit sol intruction test", () => {
     class DataClass {
         constructor(amount) {
@@ -25,8 +23,6 @@ describe("deposit sol intruction test", () => {
         const [ownerAta,] = await findAssociatedTokenAddress(owner.publicKey, mint.publicKey);
         const [vaultAta,] = await findAssociatedTokenAddress(vault, mint.publicKey);
         const amount = new BN("500000000");
-
-
 
         const schema = new Map([
             [
@@ -101,7 +97,6 @@ describe("deposit sol intruction test", () => {
         });
 
         const actual = DcaInstruction.depositSol(owner.publicKey, vault, mint.publicKey, ownerAta, vaultAta, dcaData.publicKey, amount);
-
         expect(actual).not.toBeNull();
         expect(actual).toEqual(instr);
     });

@@ -1,49 +1,47 @@
-import { Keypair } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { AccountMetaBuilder } from "../../utils";
 
 describe("Account metas test", () => {
 
+    const testKey = new PublicKey("5swt9oXbzr57dmPMZniWFoETYotCpbT7bpYbYViFGuoN");
+
     test("creating signer writable account meta", () => {
-        const keypair = Keypair.generate();
         const expected = {
-            pubkey: keypair.publicKey,
+            pubkey: testKey,
             isSigner: true,
             isWritable: true
         };
-        const actual = AccountMetaBuilder.writable(keypair.publicKey, true);
+        const actual = AccountMetaBuilder.writable(testKey, true);
         expect(actual).toEqual(expected);
     });
 
     test("creating non signer writable account meta", () => {
-        const keypair = Keypair.generate();
         const expected = {
-            pubkey: keypair.publicKey,
+            pubkey: testKey,
             isSigner: false,
             isWritable: true
         };
-        const actual = AccountMetaBuilder.writable(keypair.publicKey, false);
+        const actual = AccountMetaBuilder.writable(testKey, false);
         expect(actual).toEqual(expected);
     });
 
     test("creating signer readonly account meta", () => {
-        const keypair = Keypair.generate();
         const expected = {
-            pubkey: keypair.publicKey,
+            pubkey: testKey,
             isSigner: true,
-            isWritable: true
+            isWritable: false
         };
-        const actual = AccountMetaBuilder.readonly(keypair.publicKey, true);
+        const actual = AccountMetaBuilder.readonly(testKey, true);
         expect(actual).toEqual(expected);
     });
 
     test("creating non signer readonly account meta", () => {
-        const keypair = Keypair.generate();
         const expected = {
-            pubkey: keypair.publicKey,
+            pubkey: testKey,
             isSigner: false,
             isWritable: false
         };
-        const actual = AccountMetaBuilder.readonly(keypair.publicKey, false);
+        const actual = AccountMetaBuilder.readonly(testKey, false);
         expect(actual).toEqual(expected);
     });
 });

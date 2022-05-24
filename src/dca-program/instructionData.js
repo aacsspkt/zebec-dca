@@ -19,13 +19,30 @@ export class DepositTokenData {
     }
 }
 
+/**
+ *  Data for "InstructionTypes.ProcessDepositSol"
+ */
+export class DepositSolData {
+    constructor(amount) {
+        this.instruction = 1;
+        this.amount = amount;
+    }
+
+    /**
+     * Serialize the object to binary
+     * @returns Buffer | UInt8Array  of this object
+     */
+    encode() {
+        return Buffer.from(serialize(depositSolSchema, this));
+    }
+}
 
 /**
  * Data for "InstructionTypes.ProcessInitialize"
  */
 export class InitializeData {
     constructor(startTime, dcaAmount, dcaTime, minimumAmountOut) {
-        this.instruction = 1;
+        this.instruction = 2;
         this.startTime = startTime;
         this.dcaAmount = dcaAmount;
         this.dcaTime = dcaTime;
@@ -43,23 +60,6 @@ export class InitializeData {
 
 }
 
-/**
- *  Data for "InstructionTypes.ProcessDepositSol"
- */
-export class DepositSolData {
-    constructor(amount) {
-        this.instruction = 2;
-        this.amount = amount;
-    }
-
-    /**
-     * Serialize the object to binary
-     * @returns Buffer | UInt8Array  of this object
-     */
-    encode() {
-        return Buffer.from(serialize(depositSolSchema, this));
-    }
-}
 
 /**
  * Data for "InstructionTypes.ProcessSwapToSol"

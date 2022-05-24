@@ -5,4 +5,4 @@ export * from "./borshExtension";
 export * from "./fetchAllPoolKeys";
 export * from "./fetchPoolKeys";
 export * from "./fetchTokenList"
-export * from "./accountMetas";
+export * from "./accountMetaBuilder";

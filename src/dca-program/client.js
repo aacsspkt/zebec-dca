@@ -102,7 +102,7 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
 
         const ownerAddress = new PublicKey(owner);
         const dcaDataAddress = new PublicKey(dcaData);
-        const vaultAddress = findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
         const _startTime = new BN(startTime);
         const _dcaAmount = convertToLamports(dcaAmount);
         const _dcaTime = new BN(dcaTime);
@@ -163,14 +163,6 @@ export async function depositSol(connection, owner, mint, amount) {
         const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const _amount = convertToLamports(amount);
-
-        console.log(dcaDataAccount.publicKey.toBase58())
-        console.log(ownerAddress.toBase58());
-        console.log(mintAddress.toBase58());
-        console.log(vaultAddress.toBase58());
-        console.log(ownerAta.toBase58());
-        console.log(vaultAta.toBase58())
-        console.log(_amount.toString(10));
 
         let txn = new Transaction()
             .add(DcaInstruction.depositSol(

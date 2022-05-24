@@ -163,7 +163,7 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.writable(dcaDataAddress, true),
+                    AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data

@@ -23,7 +23,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
+      const amount = 1;
 
       const { status, data } = await depositToken(
         connection,
@@ -45,7 +45,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 0.5;
+      const amount = 1;
 
       const { status, data } = await depositSol(
         connection,
@@ -174,11 +174,11 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "GT74d3UjDRSFJitsB1zUrrbzj9D6dRdbdEfLZEP9UzrD";
-      const startTime = Math.floor(Date.now() + 10);
-      const dcaAmount = 0.3;
-      const dcaTime = Math.floor(Date.now())
-      const minimumAmountOut = 0.01;
+      const dcaData = "BAMHNc2csUGCeWPnitt11iNpq6MuxbGiwpNtmgQjFgbk";
+      const startTime = Math.floor(Date.now() + 20);
+      const dcaAmount = 0.05;
+      const dcaTime = 10000
+      const minimumAmountOut = 1;
 
       const { status, data } = await initialize(
         connection,
@@ -191,7 +191,7 @@ function App() {
       );
 
       console.log(status);
-      console.log(data);
+      console.log(data.signature);
 
     } catch (e) {
       console.log(e);
@@ -249,7 +249,7 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "3v3pd5DiajA111RfZ8RMcMzqxC3kFd3jRodNeLFPpokP";
+      const dcaData = "FHi71Sx6PneY6SUQbvqpfeCTAPFLy3Bv5N4rUiSrZmyo";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 
@@ -272,7 +272,7 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "3v3pd5DiajA111RfZ8RMcMzqxC3kFd3jRodNeLFPpokP";
+      const dcaData = "GT74d3UjDRSFJitsB1zUrrbzj9D6dRdbdEfLZEP9UzrD";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 

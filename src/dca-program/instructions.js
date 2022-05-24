@@ -300,7 +300,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAta, false),
                     AccountMetaBuilder.writable(vaultAta, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(dcaDataAddress, true),
+                    AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -345,7 +345,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAta, false),
                     AccountMetaBuilder.writable(vaultAta, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(dcaDataAddress, true),
+                    AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data

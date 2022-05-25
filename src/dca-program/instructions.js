@@ -370,7 +370,7 @@ export class DcaInstruction {
      * @param {PublicKey} serumCoinVaultAddress
      * @param {PublicKey} serumPcVaultAddress
      * @param {PublicKey} serumVaultSigner
-     * @param {PublicKey} sourceTokenAddress
+     * @param {PublicKey} vaultAddress
      * @param {PublicKey} destinationTokenAddress
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
@@ -390,7 +390,7 @@ export class DcaInstruction {
         serumCoinVaultAddress,
         serumPcVaultAddress,
         serumVaultSigner,
-        sourceTokenAddress,
+        vaultAddress,
         destinationTokenAddress,
         mintAddress,
         ownerAddress,
@@ -410,7 +410,7 @@ export class DcaInstruction {
             !(serumCoinVaultAddress instanceof PublicKey) &&
             !(serumPcVaultAddress instanceof PublicKey) &&
             !(serumVaultSigner instanceof PublicKey) &&
-            !(sourceTokenAddress instanceof PublicKey) &&
+            !(vaultAddress instanceof PublicKey) &&
             !(destinationTokenAddress instanceof PublicKey) &&
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
@@ -438,7 +438,7 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumCoinVaultAddress, false),
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
-                AccountMetaBuilder.writable(sourceTokenAddress, false),
+                AccountMetaBuilder.writable(vaultAddress, false),
                 AccountMetaBuilder.writable(destinationTokenAddress, false),
                 AccountMetaBuilder.readonly(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
@@ -466,7 +466,7 @@ export class DcaInstruction {
      * @param {PublicKey} serumPcVaultAddress
      * @param {PublicKey} serumVaultSigner
      * @param {PublicKey} sourceTokenAddress
-     * @param {PublicKey} destinationTokenAddress
+     * @param {PublicKey} vaultAddress
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
@@ -486,7 +486,7 @@ export class DcaInstruction {
         serumPcVaultAddress,
         serumVaultSigner,
         sourceTokenAddress,
-        destinationTokenAddress,
+        vaultAddress,
         mintAddress,
         ownerAddress,
         dcaDataAddress,
@@ -506,7 +506,7 @@ export class DcaInstruction {
             !(serumPcVaultAddress instanceof PublicKey) &&
             !(serumVaultSigner instanceof PublicKey) &&
             !(sourceTokenAddress instanceof PublicKey) &&
-            !(destinationTokenAddress instanceof PublicKey) &&
+            !(vaultAddress instanceof PublicKey) &&
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
             !(dcaDataAddress instanceof PublicKey)
@@ -534,7 +534,7 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
                 AccountMetaBuilder.writable(sourceTokenAddress, false),
-                AccountMetaBuilder.writable(destinationTokenAddress, false),
+                AccountMetaBuilder.writable(vaultAddress, false),
                 AccountMetaBuilder.readonly(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),

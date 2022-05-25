@@ -340,20 +340,25 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
-        const [vaultAddress,] = await findAssociatedTokenAddress(ownerAddress, dcaDataAddress);
-        const [destinationTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, NATIVE_MINT)
+        const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        const [destinationTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress)
 
-        const poolKeysList = await fetchAllPoolKeys();
-        if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+        // const poolKeysList = await fetchAllPoolKeys();
+        // if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
 
-        const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
-            el.baseMint.includes(NATIVE_MINT.toBase58()));
-        if (!keys) throw new Error("No liquidity pool found.")
+        // const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
+        //     el.baseMint.includes(NATIVE_MINT.toBase58()));
+        // if (!keys) throw new Error("No liquidity pool found.")
+
+        const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
 
         const poolKeys = await fetchPoolKeys(
             connection,
-            new PublicKey(keys.id)
+            new PublicKey(POOL_ID)
         );
+        console.log(poolKeys.baseMint.toBase58());
+        console.log(poolKeys.quoteMint.toBase58());
+
 
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
@@ -370,11 +375,11 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
                 poolKeys.marketBaseVault,   // serumCoinVaultAddress
                 poolKeys.marketQuoteVault,  // serumVaultAddress
                 poolKeys.marketAuthority,   // serumVaultSigner
-                vaultAddress,               // sourceTokenAddress
-                destinationTokenAddress,    // destinationTokenAddress
-                mintAddress,                // mintAddress
-                ownerAddress,               // ownerAddress
-                dcaDataAddress              // dcaDataAddress
+                vaultAddress,
+                destinationTokenAddress,
+                mintAddress,
+                ownerAddress,
+                dcaDataAddress
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
@@ -418,8 +423,8 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     const ownerAddress = new PublicKey(owner);
     const mintAddress = new PublicKey(mint);
     const dcaDataAddress = new PublicKey(dcaData);
-    const [vaultAddress,] = await findAssociatedTokenAddress(ownerAddress, dcaDataAddress);
-    const [sourceTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, NATIVE_MINT);
+    const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+    const [sourceTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
 
     const poolKeysList = await fetchAllPoolKeys();
     if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
@@ -448,11 +453,11 @@ export async function swapToSol(connection, owner, mint, dcaData) {
             poolKeys.marketBaseVault,   // serumCoinVaultAddress
             poolKeys.marketQuoteVault,  // serumVaultAddress
             poolKeys.marketAuthority,   // serumVaultSigner
-            sourceTokenAddress,         // sourceTokenAddress
-            vaultAddress,               // destinationTokenAddress
-            mintAddress,                // mintAddress
-            ownerAddress,               // ownerAddress
-            dcaDataAddress              // dcaDataAddress
+            sourceTokenAddress,
+            vaultAddress,
+            mintAddress,
+            ownerAddress,
+            dcaDataAddress
         ));
     txn.feePayer = ownerAddress;
     txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;

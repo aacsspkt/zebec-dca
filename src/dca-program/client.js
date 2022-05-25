@@ -1,7 +1,7 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import BN from "bn.js";
 import { DcaInstruction } from "./instructions";
-import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys } from "./utils";
+import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys, fetchAllPoolKeys } from "./utils";
 import { NATIVE_MINT } from "./constants"
 
 export const getProvider = async () => {
@@ -323,35 +323,37 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
  * @param {string} dcaData The address of the account which store dca state
  * @param {string} poolId The address of the amm liquidity pool account
  */
-export async function swapFromSol(connection, owner, mint, dcaData, poolId) {
+export async function swapFromSol(connection, owner, mint, dcaData) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !poolId) {
+        if (!connection && !owner && !mint && !dcaData) {
             throw new ReferenceError("Missing arguments.");
         }
 
         if (!(connection instanceof Connection) &&
             typeof owner != "string" &&
             typeof mint != "string" &&
-            typeof dcaData != "string" &&
-            typeof poolId != "string"
+            typeof dcaData != "string"
         ) {
             throw new TypeError("Invalid argument type.");
         }
-
-        const poolIdKey = new PublicKey(poolId);
-
-        const poolKeys = await fetchPoolKeys(
-            connection,
-            poolIdKey
-        );
 
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findAssociatedTokenAddress(ownerAddress, dcaDataAddress);
-        // please review this:    |
-        //                        V
-        const [destinationTokenAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), NATIVE_MINT])
+        const [destinationTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, NATIVE_MINT)
+
+        const poolKeysList = await fetchAllPoolKeys();
+        if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+
+        const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
+            el.baseMint.includes(NATIVE_MINT.toBase58()));
+        if (!keys) throw new Error("No liquidity pool found.")
+
+        const poolKeys = await fetchPoolKeys(
+            connection,
+            new PublicKey(keys.id)
+        );
 
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
@@ -369,7 +371,7 @@ export async function swapFromSol(connection, owner, mint, dcaData, poolId) {
                 poolKeys.marketQuoteVault,  // serumVaultAddress
                 poolKeys.marketAuthority,   // serumVaultSigner
                 vaultAddress,               // sourceTokenAddress
-                destinationTokenAddress,         // destinationTokenAddress
+                destinationTokenAddress,    // destinationTokenAddress
                 mintAddress,                // mintAddress
                 ownerAddress,               // ownerAddress
                 dcaDataAddress              // dcaDataAddress
@@ -400,35 +402,36 @@ export async function swapFromSol(connection, owner, mint, dcaData, poolId) {
  * @param {string} dcaData The address of the account which store dca state
  * @param {string} poolId The address of the amm liquidity pool account
  */
-export async function swapToSol(connection, owner, mint, dcaData, poolId) {
-    if (!connection && !owner && !mint && !dcaData && !poolId) {
+export async function swapToSol(connection, owner, mint, dcaData) {
+    if (!connection && !owner && !mint && !dcaData) {
         throw new ReferenceError("Missing arguments.");
     }
 
     if (!(connection instanceof Connection) &&
         typeof owner != "string" &&
         typeof mint != "string" &&
-        typeof dcaData != "string" &&
-        typeof poolId != "string"
+        typeof dcaData != "string"
     ) {
         throw new TypeError("Invalid argument type.");
     }
-
-    const poolIdKey = new PublicKey(poolId);
-
-    const poolKeys = await fetchPoolKeys(
-        connection,
-        poolIdKey
-    );
 
     const ownerAddress = new PublicKey(owner);
     const mintAddress = new PublicKey(mint);
     const dcaDataAddress = new PublicKey(dcaData);
     const [vaultAddress,] = await findAssociatedTokenAddress(ownerAddress, dcaDataAddress);
+    const [sourceTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, NATIVE_MINT);
 
-    // please review this:    |
-    //                        V
-    const [sourceTokenAddress,] = await findAssociatedTokenAddress(ownerAddress.toBuffer(), NATIVE_MINT.toBuffer())
+    const poolKeysList = await fetchAllPoolKeys();
+    if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+
+    const keys = poolKeysList.find(el => el.quoteMint.includes(NATIVE_MINT) &&
+        el.baseMint.includes(mintAddress));
+    if (!keys) throw new Error("No liquidity pool found.")
+
+    const poolKeys = await fetchPoolKeys(
+        connection,
+        new PublicKey(keys.id)
+    );
 
     let txn = new Transaction()
         .add(DcaInstruction.swapToSol(
@@ -456,7 +459,7 @@ export async function swapToSol(connection, owner, mint, dcaData, poolId) {
 
     const signedTxn = await window.solana.signTransaction(txn);
     const signature = await connection.sendRawTransaction(signedTxn.serialize());
-    await connection.confirmTransaction(signature, "confirmed");
+    await connection.confirmTransaction({ signature }, "confirmed");
 
     return {
         status: "success",

@@ -14,10 +14,10 @@ export {
 export const DCA_PROGRAM_ID = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tzAATRp19c7");
 
 /** Json RPC client to communicate with Solana blockchain */
-export const connection = new Connection(clusterApiUrl("devnet"));
+export const connection = new Connection(clusterApiUrl("mainnet-beta"));
 
 export { LIQUIDITY_PROGRAM_ID_V4 } from "@raydium-io/raydium-sdk"
-export const DEVNET_RAYDIUM_PROGRAM_ID_V4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
+export const DEVNET_LIQUIDITY_PROGRAM_ID_V4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
 
 export { SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk"
 export const DEVNET_SERUM_PROGRAM_ID_V3 = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin");

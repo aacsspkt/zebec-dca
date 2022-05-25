@@ -1,6 +1,3 @@
-import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
-import BN from 'bn.js';
-import { serialize } from 'borsh';
 import './App.css';
 
 import {
@@ -15,7 +12,6 @@ import {
   initialize,
   swapFromSol,
   swapToSol,
-  fetchAllPoolKeys,
 } from "./dca-program";
 
 function App() {
@@ -62,114 +58,6 @@ function App() {
       console.log(e);
     }
   }
-
-  // class DepositSolData {
-  //   constructor(amount) {
-  //     this.instruction = 1;
-  //     this.amount = amount;
-  //   }
-  // }
-
-  // const depositSolSchema = new Map([
-  //   [
-  //     DepositSolData,
-  //     {
-  //       kind: "struct",
-  //       fields: [
-  //         ["instruction", "u8"],
-  //         ["amount", "u64"],
-  //       ]
-  //     }
-  //   ]
-  // ]);
-
-
-  // const onRegularStyleDepositSolClick = async () => {
-  //   try {
-  //     let dcaDataAccount = Keypair.generate();
-  //     const ownerAddress = window.solana.publicKey;
-  //     const mintAddress = new PublicKey("6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY");
-  //     const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
-  //     const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-  //     const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-  //     const amount = new BN("500000000");
-  //     const data = serialize(depositSolSchema, new DepositSolData(amount));
-
-  //     let txn = new Transaction()
-  //       .add(new TransactionInstruction({
-  //         keys: [
-  //           {
-  //             pubkey: ownerAddress,
-  //             isSigner: true,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: vaultAddress,
-  //             isSigner: false,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: TOKEN_PROGRAM_ID,
-  //             isSigner: false,
-  //             isWritable: false
-  //           },
-  //           {
-  //             pubkey: mintAddress,
-  //             isSigner: false,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: SystemProgram.programId,
-  //             isSigner: false,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: SYSVAR_RENT_PUBKEY,
-  //             isSigner: false,
-  //             isWritable: false
-  //           },
-  //           {
-  //             pubkey: ownerAta,
-  //             isSigner: false,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: vaultAta,
-  //             isSigner: false,
-  //             isWritable: true
-  //           },
-  //           {
-  //             pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-  //             isSigner: false,
-  //             isWritable: false
-  //           },
-  //           {
-  //             pubkey: dcaDataAccount.publicKey,
-  //             isSigner: true,
-  //             isWritable: true
-  //           },
-  //         ],
-  //         programId: DCA_PROGRAM_ID,
-  //         data: data
-  //       }));
-
-  //     txn.feePayer = ownerAddress;
-  //     txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  //     txn.lastValidBlockHeight = await connection.getBlockHeight();
-  //     txn.partialSign(dcaDataAccount);
-  //     console.log(txn);
-
-  //     const signedTxn = await window.solana.signTransaction(txn);
-  //     console.log(signedTxn);
-  //     const signature = await connection.sendRawTransaction(signedTxn.serialize());
-  //     await connection.confirmTransaction(signature, "confirmed");
-
-  //     console.log(signature);
-
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
 
   const onInitializeClick = async () => {
     try {
@@ -249,7 +137,7 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "FHi71Sx6PneY6SUQbvqpfeCTAPFLy3Bv5N4rUiSrZmyo";
+      const dcaData = "F99pPHPQomSVma88y6TqpiuaPraYqW8idsJUgpbi1hbY";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 
@@ -272,7 +160,7 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "GT74d3UjDRSFJitsB1zUrrbzj9D6dRdbdEfLZEP9UzrD";
+      const dcaData = "BAMHNc2csUGCeWPnitt11iNpq6MuxbGiwpNtmgQjFgbk";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 
@@ -294,25 +182,17 @@ function App() {
 
   const onSwapFromSolClick = async () => {
     try {
-
-      // const poolKeysList = Liquidity.fetchAllPoolKeys(); // not working right now
-      const poolKeysList = await fetchAllPoolKeys();
-      if (!poolKeysList) {
-        throw Error("Some error occured in fetching pool keys.")
-      }
-      const [poolKeys,] = poolKeysList.filter(el => el.quoteMint === "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB" &&
-        el.baseMint === "So11111111111111111111111111111111111111112");
-
       const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-
-      const accounts = await swapFromSol(
+      const mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+      const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
+      const { status, data } = await swapFromSol(
         connection,
         owner,
         mint,
-        poolKeys.id
+        dcaData
       );
-      console.log(accounts);
+      console.log(status);
+      console.log(data.signature);
     } catch (e) {
       console.log(e);
     }
@@ -320,23 +200,17 @@ function App() {
 
   const onSwapToSolClick = async () => {
     try {
-      const poolKeysList = await fetchAllPoolKeys();
-      if (!poolKeysList) {
-        throw Error("Some error occured in fetching pool keys.")
-      }
-      const [poolKeys,] = poolKeysList.filter(el => el.quoteMint === "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB" &&
-        el.baseMint === "So11111111111111111111111111111111111111112");
-
       const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-
-      const accounts = await swapToSol(
+      const mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+      const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
+      const { status, data } = await swapToSol(
         connection,
         owner,
         mint,
-        poolKeys.id
+        dcaData
       );
-      console.log(accounts);
+      console.log(status);
+      console.log(data.signature);
     } catch (e) {
       console.log(e);
     }

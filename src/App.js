@@ -1,3 +1,5 @@
+import { PublicKey } from '@solana/web3.js';
+import { deserializeUnchecked } from 'borsh';
 import './App.css';
 
 import {
@@ -12,7 +14,10 @@ import {
   initialize,
   swapFromSol,
   swapToSol,
+  DcaAccount,
+  dcaAccountSchema,
 } from "./dca-program";
+
 
 function App() {
   const onDepositTokenClick = async () => {
@@ -40,8 +45,8 @@ function App() {
   const onDepositSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const amount = 1;
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const amount = 2;
 
       const { status, data } = await depositSol(
         connection,
@@ -62,11 +67,11 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "BAMHNc2csUGCeWPnitt11iNpq6MuxbGiwpNtmgQjFgbk";
-      const startTime = Math.floor(Date.now() + 20);
-      const dcaAmount = 0.05;
-      const dcaTime = 10000
-      const minimumAmountOut = 1;
+      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
+      const startTime = Math.floor(Date.now() / 1000) + (1 * 60); // add 1 min
+      const dcaAmount = 1;
+      const dcaTime = 3 * 60  // 3 min
+      const minimumAmountOut = 1.5;
 
       const { status, data } = await initialize(
         connection,
@@ -90,8 +95,8 @@ function App() {
   const onWithdrawTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
+      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const amount = 0.5;
 
       const { status, data } = await withdrawToken(
@@ -160,7 +165,7 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "BAMHNc2csUGCeWPnitt11iNpq6MuxbGiwpNtmgQjFgbk";
+      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 
@@ -183,8 +188,8 @@ function App() {
   const onSwapFromSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
-      const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
       const { status, data } = await swapFromSol(
         connection,
         owner,
@@ -201,7 +206,7 @@ function App() {
   const onSwapToSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+      const mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
       const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
       const { status, data } = await swapToSol(
         connection,
@@ -213,6 +218,18 @@ function App() {
       console.log(data.signature);
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  const onDcaDataClick = async () => {
+    try {
+      const address = "JC64t54rtCjf7txa2MJorteh1NXyU36YSddxjU2JmLN8";
+      let dcaAccount = await connection.getAccountInfo(new PublicKey(address), "confirmed");
+      console.log(dcaAccount.data);
+      let dcaData = deserializeUnchecked(dcaAccountSchema, DcaAccount, dcaAccount.data)
+      console.log("Dca Account Data", dcaData);
+    } catch (e) {
+      console.log("error: ", e);
     }
   }
 
@@ -228,6 +245,7 @@ function App() {
       <button className='btn' onClick={onFundSolClick}>Fund Sol</button>
       <button className='btn' onClick={onSwapFromSolClick}>Swap From Sol</button>
       <button className='btn' onClick={onSwapToSolClick}>Swap To Sol</button>
+      <button className='btn' onClick={onDcaDataClick}>Get Dca Account Data</button>
     </div>
   );
 }

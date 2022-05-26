@@ -1,8 +1,9 @@
-import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, sendAndConfirmRawTransaction, Transaction } from "@solana/web3.js";
 import BN from "bn.js";
 import { DcaInstruction } from "./instructions";
 import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys, fetchAllPoolKeys } from "./utils";
 import { NATIVE_MINT } from "./constants"
+
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -12,6 +13,7 @@ export const getProvider = async () => {
         window.open("https://phantom.app/", "_blank");
     }
 };
+
 
 /**
  * Deposit non-native token in dca program vault
@@ -57,8 +59,10 @@ export async function depositToken(connection, owner, mint, amount) {
         txn.partialSign(dcaDataAccount);
 
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize()
+        );
 
         return {
             status: "success",
@@ -104,9 +108,9 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
         const _startTime = new BN(startTime);
-        const _dcaAmount = convertToLamports(dcaAmount);
+        const _dcaAmount = convertToLamports(dcaAmount, 6); // todo: decimals may vary depending upon token mint so required checking of decimal value. 6 is for usdt test
         const _dcaTime = new BN(dcaTime);
-        const _minimumAmountOut = convertToLamports(minimumAmountOut);
+        const _minimumAmountOut = convertToLamports(minimumAmountOut, 6);
 
         let txn = new Transaction()
             .add(DcaInstruction.initialize(
@@ -121,10 +125,12 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
 
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize()
+        );
 
         return {
             status: "success",
@@ -177,11 +183,12 @@ export async function depositSol(connection, owner, mint, amount) {
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         txn.partialSign(dcaDataAccount);
-        console.log(txn);
         const signedTxn = await window.solana.signTransaction(txn);
-        console.log(signedTxn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize()
+        );
 
         return {
             status: "success",
@@ -226,8 +233,6 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
-
-
         let txn = new Transaction()
             .add(DcaInstruction.withdrawToken(
                 ownerAddress,
@@ -240,10 +245,12 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize(),
+        );
 
         return {
             status: "success",
@@ -299,11 +306,12 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
 
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize(),
+        );
         return {
             status: "success",
             data: {
@@ -356,9 +364,8 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             connection,
             new PublicKey(POOL_ID)
         );
-        console.log(poolKeys.baseMint.toBase58());
-        console.log(poolKeys.quoteMint.toBase58());
-
+        console.log("Base mint: ", poolKeys.baseMint.toBase58());
+        console.log("Quote mint: ", poolKeys.quoteMint.toBase58());
 
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
@@ -383,10 +390,12 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize(),
+        );
 
         return {
             status: "success",
@@ -461,10 +470,12 @@ export async function swapToSol(connection, owner, mint, dcaData) {
         ));
     txn.feePayer = ownerAddress;
     txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
     const signedTxn = await window.solana.signTransaction(txn);
-    const signature = await connection.sendRawTransaction(signedTxn.serialize());
-    await connection.confirmTransaction({ signature }, "confirmed");
+
+    const signature = await sendAndConfirmRawTransaction(
+        connection,
+        signedTxn.serialize(),
+    );
 
     return {
         status: "success",
@@ -517,10 +528,12 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize(),
+        );
 
         return {
             status: "success",
@@ -576,10 +589,12 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        const signature = await connection.sendRawTransaction(signedTxn.serialize());
-        await connection.confirmTransaction(signature, "confirmed");
+
+        const signature = await sendAndConfirmRawTransaction(
+            connection,
+            signedTxn.serialize()
+        );
 
         return {
             status: "success",

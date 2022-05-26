@@ -56,8 +56,8 @@ const dcaAccountSchema = new Map([
             kind: "struct",
             field: [
                 ["totalAmount", "u64"],
-                ["senderAddress", ["u8", 32]],
-                ["mintAddress", ["u8", 32]],
+                ["senderAddress", [32]],
+                ["mintAddress", [32]],
                 ["startTime", "u64"],
                 ["dcaAmount", "u64"],
                 ["dcaTime", "u64"],

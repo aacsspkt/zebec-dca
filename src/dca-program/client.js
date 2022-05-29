@@ -364,8 +364,22 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             connection,
             new PublicKey(POOL_ID)
         );
-        console.log("Base mint: ", poolKeys.baseMint.toBase58());
-        console.log("Quote mint: ", poolKeys.quoteMint.toBase58());
+        console.log(`
+            poolKeys: ,
+            "id": ${poolKeys.id},
+            "authority": ${poolKeys.authority},
+            "openOrders": ${poolKeys.openOrders},
+            "targetOrders": ${poolKeys.targetOrders},
+            "baseVault": ${poolKeys.baseVault},
+            "quoteVault": ${poolKeys.quoteVault},
+            "marketId": ${poolKeys.marketId},
+            "marketBids": ${poolKeys.marketBids},
+            "marketAsks": ${poolKeys.marketAsks},
+            "marketEventQueue": ${poolKeys.marketEventQueue},
+            "marketBaseVault": ${poolKeys.marketBaseVault},
+            "marketQuoteVault": ${poolKeys.marketQuoteVault},
+            "marketAuthority": ${poolKeys.marketAuthority},`
+        );
 
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
@@ -390,7 +404,9 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
         const signedTxn = await window.solana.signTransaction(txn);
+        console.log(signedTxn);
 
         const signature = await sendAndConfirmRawTransaction(
             connection,

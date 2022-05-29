@@ -168,7 +168,7 @@ export class FundSolData {
 }
 
 
-const depositTokenSchema = new Map([
+export const depositTokenSchema = new Map([
     [
         DepositTokenData,
         {

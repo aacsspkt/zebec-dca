@@ -9,7 +9,8 @@ import {
     ASSOCIATED_TOKEN_PROGRAM_ID,
     SYSVAR_RENT_PUBKEY,
     SERUM_PROGRAM_ID_V3,
-    LIQUIDITY_PROGRAM_ID_V4
+    LIQUIDITY_PROGRAM_ID_V4,
+    DEVNET_LIQUIDITY_PROGRAM_ID_V4
 } from "./constants"
 import {
     DepositSolData,
@@ -38,19 +39,21 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit non native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint which is used in dca process     
+     * @param {PublicKey} baseMintAddress The address of token mint which is used in dca process     
      * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} baseVaultAta The assosciated token address of vaultAddress
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} amount The amount of token to deposit
      */
-    static depositToken(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, amount) {
+    static depositToken(ownerAddress, vaultAddress, baseMintAddress, quoteMintAddress, ownerAta, baseVaultAta, quoteVaultAta, dcaDataAddress, amount) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
+                !(baseMintAddress instanceof PublicKey) &&
+                !(quoteMintAddress instanceof PublicKey) &&
                 !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(baseVaultAta instanceof PublicKey) &&
+                !(quoteVaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !(amount instanceof BN)) {
                 throw new TypeError("Invalid argument type.")
@@ -63,11 +66,13 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.writable(baseMintAddress, false),
+                    AccountMetaBuilder.writable(quoteMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
                     AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(baseVaultAta, false),
+                    AccountMetaBuilder.writable(quoteVaultAta, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -84,19 +89,21 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of expected token mint after dca process
+     * @param {PublicKey} quoteMintAddress The address of expected token mint after dca process
      * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} baseVaultAta The assosciated token address of vaultAddress
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} amount The amount of sol to deposit
      */
-    static depositSol(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, amount) {
+    static depositSol(ownerAddress, vaultAddress, quoteMintAddress, baseMintAddress, ownerAta, baseVaultAta, quoteVaultAta, dcaDataAddress, amount) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
+                !(quoteMintAddress instanceof PublicKey) &&
+                !(baseMintAddress instanceof PublicKey) &&
                 !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(baseVaultAta instanceof PublicKey) &&
+                !(quoteVaultAta instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(amount)
             ) {
@@ -110,11 +117,13 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.writable(quoteMintAddress, false),
+                    AccountMetaBuilder.writable(baseMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
                     AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(baseVaultAta, false),
+                    AccountMetaBuilder.writable(quoteVaultAta, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -205,8 +214,8 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAccount, false),
+                    AccountMetaBuilder.writable(vaultTokenAccount, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -251,10 +260,13 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
+                    AccountMetaBuilder.writable(nativeMintAddress, true),
+                    AccountMetaBuilder.writable(vaultNativeMintAddress, true),
+                    AccountMetaBuilder.writable(ownerNativeMintAddress, true),
                 ],
                 programId: DCA_PROGRAM_ID,
                 data: data
@@ -297,8 +309,8 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
@@ -340,10 +352,11 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(vaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
@@ -423,14 +436,14 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
-                AccountMetaBuilder.readonly(LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
                 AccountMetaBuilder.writable(ammTargetOrderAddress, false),
                 AccountMetaBuilder.writable(poolCoinTokenAddress, false),
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
-                AccountMetaBuilder.readonly(SERUM_PROGRAM_ID_V3, false),
+                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
@@ -439,10 +452,12 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
                 AccountMetaBuilder.writable(vaultAddress, false),
+                AccountMetaBuilder.writable(sourceTokenAddress, false),
                 AccountMetaBuilder.writable(destinationTokenAddress, false),
-                AccountMetaBuilder.readonly(mintAddress, false),
+                AccountMetaBuilder.readonly(quoteMintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
+                AccountMetaBuilder.readonly(baseMintAddress, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data
@@ -535,9 +550,11 @@ export class DcaInstruction {
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
                 AccountMetaBuilder.writable(sourceTokenAddress, false),
                 AccountMetaBuilder.writable(vaultAddress, false),
-                AccountMetaBuilder.readonly(mintAddress, false),
+                AccountMetaBuilder.writable(destinationTokenAddress, false),
+                AccountMetaBuilder.readonly(baseMintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
+                AccountMetaBuilder.readonly(quoteMintAddress, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data

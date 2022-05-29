@@ -20,4 +20,4 @@ export { LIQUIDITY_PROGRAM_ID_V4 } from "@raydium-io/raydium-sdk"
 export const DEVNET_LIQUIDITY_PROGRAM_ID_V4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
 
 export { SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk"
-export const DEVNET_SERUM_PROGRAM_ID_V3 = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin");
+export const DEVNET_SERUM_PROGRAM_ID_V3 = new PublicKey("DESVgJVGajEgKGXhb6XmqDHGz3VjdgP7rEVESBgxmroY");

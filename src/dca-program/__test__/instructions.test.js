@@ -21,7 +21,6 @@ describe("deposit sol intruction test", () => {
         const [vaultAta,] = await findAssociatedTokenAddress(vault, mint);
         const amount = new BN("500000000");
         const data = new DepositSolData(amount).encode();
-        console.log(data);
         const keys = [
             {
                 pubkey: owner,
@@ -79,7 +78,6 @@ describe("deposit sol intruction test", () => {
 
         expect(actual.keys).toEqual(keys);
         expect(actual.data).toEqual(data);
-        console.log(actual.data);
         expect(actual.programId).toEqual(new PublicKey(DCA_PROGRAM_ID));
     });
 });

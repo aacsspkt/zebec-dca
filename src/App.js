@@ -233,6 +233,7 @@ function App() {
     }
   }
 
+
   return (
     <div className="App">
       <button className='btn' onClick={getProvider}>Connect</button>

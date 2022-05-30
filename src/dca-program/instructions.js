@@ -8,9 +8,8 @@ import {
     TOKEN_PROGRAM_ID,
     ASSOCIATED_TOKEN_PROGRAM_ID,
     SYSVAR_RENT_PUBKEY,
-    SERUM_PROGRAM_ID_V3,
-    LIQUIDITY_PROGRAM_ID_V4,
-    DEVNET_LIQUIDITY_PROGRAM_ID_V4
+    DEVNET_LIQUIDITY_PROGRAM_ID_V4,
+    DEVNET_SERUM_PROGRAM_ID_V3
 } from "./constants"
 import {
     DepositSolData,
@@ -39,21 +38,33 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit non native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} baseMintAddress The address of token mint which is used in dca process     
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} baseVaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of base token mint      
+     * @param {PublicKey} nativeMintAddress The address of quote native mint     
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
+     * @param {PublicKey} vaultNativeMintAddress The assosciated native mint address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} amount The amount of token to deposit
      */
-    static depositToken(ownerAddress, vaultAddress, baseMintAddress, quoteMintAddress, ownerAta, baseVaultAta, quoteVaultAta, dcaDataAddress, amount) {
+    static depositToken(
+        ownerAddress,
+        vaultAddress,
+        mintAddress,
+        nativeMintAddress,
+        ownerTokenAddress,
+        vaultTokenAddress,
+        vaultNativeMintAddress,
+        dcaDataAddress,
+        amount
+    ) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
-                !(baseMintAddress instanceof PublicKey) &&
-                !(quoteMintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(baseVaultAta instanceof PublicKey) &&
-                !(quoteVaultAta instanceof PublicKey) &&
+                !(mintAddress instanceof PublicKey) &&
+                !(nativeMintAddress instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
+                !(vaultNativeMintAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !(amount instanceof BN)) {
                 throw new TypeError("Invalid argument type.")
@@ -66,13 +77,13 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(baseMintAddress, false),
-                    AccountMetaBuilder.writable(quoteMintAddress, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(baseVaultAta, false),
-                    AccountMetaBuilder.writable(quoteVaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -89,23 +100,35 @@ export class DcaInstruction {
      * Generate Transaction Instruction that deposit native token to DCA vault
      * @param {PublicKey} ownerAddress The address of owner who deposits token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} quoteMintAddress The address of expected token mint after dca process
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} baseVaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of quote token mint     
+     * @param {PublicKey} nativeMintAddress The address of base native mint     
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultNativeMintAddress The assosciated native mint address of vault
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} amount The amount of sol to deposit
      */
-    static depositSol(ownerAddress, vaultAddress, quoteMintAddress, baseMintAddress, ownerAta, baseVaultAta, quoteVaultAta, dcaDataAddress, amount) {
+    static depositSol(
+        ownerAddress,
+        vaultAddress,
+        mintAddress,
+        nativeMintAddress,
+        ownerTokenAddress,
+        vaultNativeMintAddress,
+        vaultTokenAddress,
+        dcaDataAddress,
+        amount
+    ) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
-                !(quoteMintAddress instanceof PublicKey) &&
-                !(baseMintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(baseVaultAta instanceof PublicKey) &&
-                !(quoteVaultAta instanceof PublicKey) &&
+                !(mintAddress instanceof PublicKey) &&
+                !(nativeMintAddress instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultNativeMintAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
-                !isBN(amount)
+                !(amount instanceof BN)
             ) {
                 throw new TypeError("Invalid argument type.")
             }
@@ -117,13 +140,13 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
-                    AccountMetaBuilder.writable(quoteMintAddress, false),
-                    AccountMetaBuilder.writable(baseMintAddress, false),
+                    AccountMetaBuilder.writable(mintAddress, false),
+                    AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerAta, false),
-                    AccountMetaBuilder.writable(baseVaultAta, false),
-                    AccountMetaBuilder.writable(quoteVaultAta, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultNativeMintAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -186,19 +209,19 @@ export class DcaInstruction {
      * Generate Transaction Instruction that withdraws non-native token from DCA vault
      * @param {PublicKey} ownerAddress The address of owner who withdraws token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of quote token mint
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
      * @param {BN} transferAmount The amount to withdraw
      */
-    static withdrawToken(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, transferAmount) {
+    static withdrawToken(ownerAddress, vaultAddress, mintAddress, ownerTokenAddress, vaultTokenAddress, dcaDataAddress, transferAmount) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
                 !(mintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
                 throw new TypeError("Invalid argument type.")
@@ -214,8 +237,8 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
-                    AccountMetaBuilder.writable(ownerTokenAccount, false),
-                    AccountMetaBuilder.writable(vaultTokenAccount, false),
+                    AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
@@ -231,20 +254,37 @@ export class DcaInstruction {
      * Generate Transaction Instruction that withdraws native token from DCA vault
      * @param {PublicKey} ownerAddress The address of owner who withdraws token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of base token mint
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
+     * @param {PublicKey} nativeMintAddress The address of base token mint
+     * @param {PublicKey} vaultNativeMintAddress The assosciated native mint address of vault
+     * @param {PublicKey} ownerNativeMintAddress The assosciated native mint address of owner
      * @param {BN} transferAmount The amount to withdraw
      */
-    static withdrawSol(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, transferAmount) {
+    static withdrawSol(
+        ownerAddress,
+        vaultAddress,
+        mintAddress,
+        ownerTokenAddress,
+        vaultTokenAddress,
+        dcaDataAddress,
+        nativeMintAddress,
+        vaultNativeMintAddress,
+        ownerNativeMintAddress,
+        transferAmount
+    ) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
                 !(mintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
+                !(nativeMintAddress instanceof PublicKey) &&
+                !(vaultNativeMintAddress instanceof PublicKey) &&
+                !(ownerNativeMintAddress instanceof PublicKey) &&
                 !isBN(transferAmount)
             ) {
                 throw new TypeError("Invalid argument type.")
@@ -278,22 +318,22 @@ export class DcaInstruction {
 
 
     /**
-     * Generate Transaction Instruction that // todo
+     * Generate transaction instruction that fund token in initialized dca address
      * @param {PublicKey} ownerAddress The address of owner who withdraws token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of base token mint
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
-     * @param {BN} transferAmount The amount to withdraw
+     * @param {BN} transferAmount The amount of token to fund
      */
-    static fundToken(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, transferAmount) {
+    static fundToken(ownerAddress, vaultAddress, mintAddress, ownerTokenAddress, vaultTokenAddress, dcaDataAddress, transferAmount) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
                 !(mintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
                 throw new TypeError("Invalid argument type.")
@@ -323,22 +363,36 @@ export class DcaInstruction {
     }
 
     /**
-     * Generate Transaction Instruction that // todo
+     * Generate transaction instruction that sol to intialized dca process
      * @param {PublicKey} ownerAddress The address of owner who withdraws token
      * @param {PublicKey} vaultAddress The program derived address from seed of ownerAddress key bytes and dcaDataAddress key bytes
-     * @param {PublicKey} mintAddress The address of token mint
-     * @param {PublicKey} ownerAta The associated token address of ownerAddress
-     * @param {PublicKey} vaultAta The assosciated token address of vaultAddress
+     * @param {PublicKey} mintAddress The address of quote token mint
+     * @param {PublicKey} nativeMintAddress The address of base native mint
+     * @param {PublicKey} ownerTokenAddress The associated token address of owner
+     * @param {PublicKey} vaultNativeMintAddress The associated token address of owner
+     * @param {PublicKey} vaultTokenAddress The assosciated token address of vault
      * @param {PublicKey} dcaDataAddress The address to store the dca data state
-     * @param {BN} transferAmount The amount to withdraw
+     * @param {BN} transferAmount The amount sol to fund
      */
-    static fundSol(ownerAddress, vaultAddress, mintAddress, ownerAta, vaultAta, dcaDataAddress, transferAmount) {
+    static fundSol(
+        ownerAddress,
+        vaultAddress,
+        mintAddress,
+        nativeMintAddress,
+        ownerTokenAddress,
+        vaultNativeMintAddress,
+        vaultTokenAddress,
+        dcaDataAddress,
+        transferAmount
+    ) {
         try {
             if (!(ownerAddress instanceof PublicKey) &&
                 !(vaultAddress instanceof PublicKey) &&
                 !(mintAddress instanceof PublicKey) &&
-                !(ownerAta instanceof PublicKey) &&
-                !(vaultAta instanceof PublicKey) &&
+                !(nativeMintAddress instanceof PublicKey) &&
+                !(ownerTokenAddress instanceof PublicKey) &&
+                !(vaultNativeMintAddress instanceof PublicKey) &&
+                !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
                 !isBN(transferAmount)) {
                 throw new TypeError("Invalid argument type.")
@@ -356,6 +410,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
                     AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
+                    AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
@@ -369,7 +424,7 @@ export class DcaInstruction {
     }
 
     /**
-     * Generate Transaction Instruction that swap token from sol
+     * Generate transaction instruction that swap token from sol
      * @param {PublicKey} ammAddress
      * @param {PublicKey} ammAuthorityAddress
      * @param {PublicKey} ammOpenOrderAddress
@@ -384,7 +439,8 @@ export class DcaInstruction {
      * @param {PublicKey} serumPcVaultAddress
      * @param {PublicKey} serumVaultSigner
      * @param {PublicKey} vaultAddress
-     * @param {PublicKey} destinationTokenAddress
+     * @param {PublicKey} vaultNativeAddress
+     * @param {PublicKey} vaultTokenAddress
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
@@ -404,10 +460,12 @@ export class DcaInstruction {
         serumPcVaultAddress,
         serumVaultSigner,
         vaultAddress,
-        destinationTokenAddress,
+        vaultNativeMintAddress,
+        vaultTokenAddress,
         mintAddress,
         ownerAddress,
-        dcaDataAddress
+        dcaDataAddress,
+        nativeMintAddress
     ) {
         if (
             !(ammAddress instanceof PublicKey) &&
@@ -424,13 +482,39 @@ export class DcaInstruction {
             !(serumPcVaultAddress instanceof PublicKey) &&
             !(serumVaultSigner instanceof PublicKey) &&
             !(vaultAddress instanceof PublicKey) &&
-            !(destinationTokenAddress instanceof PublicKey) &&
+            !(vaultNativeMintAddress instanceof PublicKey) &&
+            !(vaultTokenAddress instanceof PublicKey) &&
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
-            !(dcaDataAddress instanceof PublicKey)
+            !(dcaDataAddress instanceof PublicKey) &&
+            !(nativeMintAddress instanceof PublicKey)
         ) {
             throw new TypeError("Invalid argument type.")
         }
+
+        console.log("DEVNET_LIQUIDITY_PROGRAM_ID_V4: ", DEVNET_LIQUIDITY_PROGRAM_ID_V4.toString())
+        console.log("ammAddress ", ammAddress.toString())
+        console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
+        console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
+        console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
+        console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
+        console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
+        console.log("DEVNET_SERUM_PROGRAM_ID_V3: ", DEVNET_SERUM_PROGRAM_ID_V3.toString())
+        console.log("serumMarketAddress: ", serumMarketAddress.toString())
+        console.log("serumBidsAddress: ", serumBidsAddress.toString())
+        console.log("serumAskAddress: ", serumAskAddress.toString())
+        console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
+        console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
+        console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
+        console.log("serumVaultSigner: ", serumVaultSigner.toString())
+        console.log("vaultAddress: ", vaultAddress.toString())
+        console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
+        console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
+        console.log("mintAddress: ", mintAddress.toString())
+        console.log("ownerAddress: ", ownerAddress.toString())
+        console.log("dcaDataAddress: ", dcaDataAddress.toString())
+        console.log("nativeMintAddress: ", nativeMintAddress.toString())
+        console.log("TOKEN_PROGRAM_ID: ", TOKEN_PROGRAM_ID.toString())
 
         const data = new SwapFromSolData().encode();
 
@@ -443,7 +527,7 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(ammTargetOrderAddress, false),
                 AccountMetaBuilder.writable(poolCoinTokenAddress, false),
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
-                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
@@ -452,12 +536,13 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
                 AccountMetaBuilder.writable(vaultAddress, false),
-                AccountMetaBuilder.writable(sourceTokenAddress, false),
-                AccountMetaBuilder.writable(destinationTokenAddress, false),
-                AccountMetaBuilder.readonly(quoteMintAddress, false),
+                AccountMetaBuilder.writable(vaultNativeMintAddress, false),
+                AccountMetaBuilder.writable(vaultTokenAddress, false),
+                AccountMetaBuilder.writable(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
-                AccountMetaBuilder.readonly(baseMintAddress, false),
+                AccountMetaBuilder.writable(nativeMintAddress, false),
+                AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data
@@ -466,7 +551,7 @@ export class DcaInstruction {
 
 
     /**
-     * Generate Transaction Instruction that swap token to sol
+     * Generate transaction instruction that swap token to sol
      * @param {PublicKey} ammAddress
      * @param {PublicKey} ammAuthorityAddress
      * @param {PublicKey} ammOpenOrderAddress
@@ -482,9 +567,11 @@ export class DcaInstruction {
      * @param {PublicKey} serumVaultSigner
      * @param {PublicKey} sourceTokenAddress
      * @param {PublicKey} vaultAddress
+     * @param {PublicKey} vaultNativeMintAddress
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
+     * @param {PublicKey} nativeMintAddress
      */
     static swapToSol(
         ammAddress,
@@ -502,9 +589,11 @@ export class DcaInstruction {
         serumVaultSigner,
         sourceTokenAddress,
         vaultAddress,
+        vaultNativeMintAddress,
         mintAddress,
         ownerAddress,
         dcaDataAddress,
+        nativeMintAddress,
     ) {
         if (
             !(ammAddress instanceof PublicKey) &&
@@ -522,9 +611,11 @@ export class DcaInstruction {
             !(serumVaultSigner instanceof PublicKey) &&
             !(sourceTokenAddress instanceof PublicKey) &&
             !(vaultAddress instanceof PublicKey) &&
+            !(vaultNativeMintAddress instanceof PublicKey) &&
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
-            !(dcaDataAddress instanceof PublicKey)
+            !(dcaDataAddress instanceof PublicKey) &&
+            !(nativeMintAddress instanceof PublicKey)
         ) {
             throw new TypeError("Invalid argument type.")
         }
@@ -533,14 +624,14 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
-                AccountMetaBuilder.readonly(LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
                 AccountMetaBuilder.writable(ammTargetOrderAddress, false),
                 AccountMetaBuilder.writable(poolCoinTokenAddress, false),
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
-                AccountMetaBuilder.readonly(SERUM_PROGRAM_ID_V3, false),
+                AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
@@ -550,11 +641,11 @@ export class DcaInstruction {
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
                 AccountMetaBuilder.writable(sourceTokenAddress, false),
                 AccountMetaBuilder.writable(vaultAddress, false),
-                AccountMetaBuilder.writable(destinationTokenAddress, false),
-                AccountMetaBuilder.readonly(baseMintAddress, false),
+                AccountMetaBuilder.writable(vaultNativeMintAddress, false),
+                AccountMetaBuilder.readonly(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
-                AccountMetaBuilder.readonly(quoteMintAddress, false),
+                AccountMetaBuilder.readonly(nativeMintAddress, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data

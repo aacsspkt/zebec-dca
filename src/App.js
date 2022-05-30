@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, SendTransactionError } from '@solana/web3.js';
 import { deserializeUnchecked } from 'borsh';
 import './App.css';
 
@@ -18,12 +18,13 @@ import {
   dcaAccountSchema,
 } from "./dca-program";
 
+import { fetchAllPoolKeys } from "./dca-program/utils/raydium_utils";
 
 function App() {
   const onDepositTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const amount = 1;
 
       const { status, data } = await depositToken(
@@ -67,7 +68,7 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
+      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
       const startTime = Math.floor(Date.now() / 1000) + (1 * 60); // add 1 min
       const dcaAmount = 1;
       const dcaTime = 3 * 60  // 3 min
@@ -95,7 +96,7 @@ function App() {
   const onWithdrawTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
+      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const amount = 0.5;
 
@@ -142,7 +143,7 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "F99pPHPQomSVma88y6TqpiuaPraYqW8idsJUgpbi1hbY";
+      const dcaData = "Ay75t7vwzVbM7DazTHrEWdxfmCzUHbmxNApzxR8pSVbE";
       const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
       const transferAmount = 0.5;
 
@@ -165,9 +166,9 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
-      const transferAmount = 0.5;
+      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const transferAmount = 1;
 
       const { status, data } = await fundSol(
         connection,
@@ -189,7 +190,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "AA5juxiDCffHf6fzJ92sGAJNGRUb3nBub4yDDNZZmq7m";
+      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
       const { status, data } = await swapFromSol(
         connection,
         owner,
@@ -199,15 +200,15 @@ function App() {
       console.log(status);
       console.log(data.signature);
     } catch (e) {
-      console.log(e);
+      console.log((e instanceof SendTransactionError) ? e.logs : e);
     }
   }
 
   const onSwapToSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
-      const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const dcaData = "BVjnBmnrQPuZ6oxSZuCjsHEPj9GFnv9gZGEjn1LVLvaM";
       const { status, data } = await swapToSol(
         connection,
         owner,
@@ -233,6 +234,20 @@ function App() {
     }
   }
 
+
+
+  const onFetchPoolKeys = async () => {
+    const list = await fetchAllPoolKeys(connection);
+    list.filter(poolKeys => poolKeys.quoteMint == "So11111111111111111111111111111111111111112")
+      .map(poolKeys => {
+        console.log(`Pool Id: ${poolKeys.id}`,
+          `base mint: ${poolKeys.baseMint}`,
+          `quote mint: ${poolKeys.quoteMint}`,
+        );
+      })
+  }
+
+  // onFetchPoolKeys();
 
   return (
     <div className="App">

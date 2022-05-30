@@ -39,17 +39,20 @@ export async function depositToken(connection, owner, mint, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-        const _amount = convertToLamports(amount);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NATIVE_MINT);
+        const _amount = convertToLamports(amount, 6);
 
         let txn = new Transaction()
             .add(DcaInstruction.depositToken(
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                NATIVE_MINT,
+                ownerTokenAddress,
+                vaultTokenAddress,
+                vaultNativeMintAddress,
                 dcaDataAccount.publicKey,
                 _amount
             ));
@@ -166,8 +169,9 @@ export async function depositSol(connection, owner, mint, amount) {
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAccount.publicKey.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NATIVE_MINT);
         const _amount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -175,8 +179,10 @@ export async function depositSol(connection, owner, mint, amount) {
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                NATIVE_MINT,
+                ownerTokenAddress,
+                vaultNativeMintAddress,
+                vaultTokenAddress,
                 dcaDataAccount.publicKey,
                 _amount
             ));
@@ -229,8 +235,8 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -238,8 +244,8 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                ownerTokenAddress,
+                vaultTokenAddress,
                 dcaDataAddress,
                 transferAmount
             ));
@@ -290,8 +296,10 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [ownerNativeMintAddress,] = await findAssociatedTokenAddress(ownerAddress, NATIVE_MINT);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NATIVE_MINT);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -299,9 +307,12 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                ownerTokenAddress,
+                vaultTokenAddress,
                 dcaDataAddress,
+                NATIVE_MINT,
+                vaultNativeMintAddress,
+                ownerNativeMintAddress,
                 transferAmount
             ));
         txn.feePayer = ownerAddress;
@@ -349,7 +360,8 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [destinationTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress)
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NATIVE_MINT)
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress)
 
         // const poolKeysList = await fetchAllPoolKeys();
         // if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
@@ -358,27 +370,12 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         //     el.baseMint.includes(NATIVE_MINT.toBase58()));
         // if (!keys) throw new Error("No liquidity pool found.")
 
+        // SOL_USDT
         const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
 
         const poolKeys = await fetchPoolKeys(
             connection,
             new PublicKey(POOL_ID)
-        );
-        console.log(`
-            poolKeys: ,
-            "id": ${poolKeys.id},
-            "authority": ${poolKeys.authority},
-            "openOrders": ${poolKeys.openOrders},
-            "targetOrders": ${poolKeys.targetOrders},
-            "baseVault": ${poolKeys.baseVault},
-            "quoteVault": ${poolKeys.quoteVault},
-            "marketId": ${poolKeys.marketId},
-            "marketBids": ${poolKeys.marketBids},
-            "marketAsks": ${poolKeys.marketAsks},
-            "marketEventQueue": ${poolKeys.marketEventQueue},
-            "marketBaseVault": ${poolKeys.marketBaseVault},
-            "marketQuoteVault": ${poolKeys.marketQuoteVault},
-            "marketAuthority": ${poolKeys.marketAuthority},`
         );
 
         let txn = new Transaction()
@@ -397,10 +394,12 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
                 poolKeys.marketQuoteVault,  // serumVaultAddress
                 poolKeys.marketAuthority,   // serumVaultSigner
                 vaultAddress,
-                destinationTokenAddress,
+                vaultNativeMintAddress,
+                vaultTokenAddress,
                 mintAddress,
                 ownerAddress,
-                dcaDataAddress
+                dcaDataAddress,
+                NATIVE_MINT,
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
@@ -449,18 +448,39 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     const mintAddress = new PublicKey(mint);
     const dcaDataAddress = new PublicKey(dcaData);
     const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-    const [sourceTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+    const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+    const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NATIVE_MINT);
 
-    const poolKeysList = await fetchAllPoolKeys();
-    if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+    // const poolKeysList = await fetchAllPoolKeys();
+    // if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
 
-    const keys = poolKeysList.find(el => el.quoteMint.includes(NATIVE_MINT) &&
-        el.baseMint.includes(mintAddress));
-    if (!keys) throw new Error("No liquidity pool found.")
+    // const keys = poolKeysList.find(el => el.quoteMint.includes(NATIVE_MINT) &&
+    //     el.baseMint.includes(mintAddress));
+    // if (!keys) throw new Error("No liquidity pool found.")
+
+    // FIDA_SOL
+    const POOL_ID = new PublicKey("ER3u3p9TGyA4Sc9VCJrkLq4hR73GFW8QAzYkkz8rSwsk");
 
     const poolKeys = await fetchPoolKeys(
         connection,
-        new PublicKey(keys.id)
+        POOL_ID
+    );
+
+    console.log(`
+            poolKeys: ,
+            "id": ${poolKeys.id},
+            "authority": ${poolKeys.authority},
+            "openOrders": ${poolKeys.openOrders},
+            "targetOrders": ${poolKeys.targetOrders},
+            "baseVault": ${poolKeys.baseVault},
+            "quoteVault": ${poolKeys.quoteVault},
+            "marketId": ${poolKeys.marketId},
+            "marketBids": ${poolKeys.marketBids},
+            "marketAsks": ${poolKeys.marketAsks},
+            "marketEventQueue": ${poolKeys.marketEventQueue},
+            "marketBaseVault": ${poolKeys.marketBaseVault},
+            "marketQuoteVault": ${poolKeys.marketQuoteVault},
+            "marketAuthority": ${poolKeys.marketAuthority},`
     );
 
     let txn = new Transaction()
@@ -478,11 +498,13 @@ export async function swapToSol(connection, owner, mint, dcaData) {
             poolKeys.marketBaseVault,   // serumCoinVaultAddress
             poolKeys.marketQuoteVault,  // serumVaultAddress
             poolKeys.marketAuthority,   // serumVaultSigner
-            sourceTokenAddress,
+            vaultTokenAddress,
             vaultAddress,
+            vaultNativeMintAddress,
             mintAddress,
             ownerAddress,
-            dcaDataAddress
+            dcaDataAddress,
+            NATIVE_MINT,
         ));
     txn.feePayer = ownerAddress;
     txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
@@ -528,8 +550,8 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -537,8 +559,8 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                ownerTokenAddress,
+                vaultTokenAddress,
                 dcaDataAddress,
                 transferAmount
             ));
@@ -589,8 +611,9 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        const [ownerAta,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
-        const [vaultAta,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
+        const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()
@@ -598,8 +621,10 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
                 ownerAddress,
                 vaultAddress,
                 mintAddress,
-                ownerAta,
-                vaultAta,
+                NATIVE_MINT,
+                ownerTokenAddress,
+                vaultNativeMintAddress,
+                vaultTokenAddress,
                 dcaDataAddress,
                 transferAmount
             ));

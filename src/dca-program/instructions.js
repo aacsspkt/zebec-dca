@@ -425,12 +425,14 @@ export class DcaInstruction {
 
     /**
      * Generate transaction instruction that swap token from sol
+     * @param {PublicKey} liquidityProgramId
      * @param {PublicKey} ammAddress
      * @param {PublicKey} ammAuthorityAddress
      * @param {PublicKey} ammOpenOrderAddress
      * @param {PublicKey} ammTargetOrderAddress
      * @param {PublicKey} poolCoinTokenAddress
      * @param {PublicKey} poolPcTokenAddress
+     * @param {PublicKey} serumMarketProgramId
      * @param {PublicKey} serumMarketAddress
      * @param {PublicKey} serumBidsAddress
      * @param {PublicKey} serumAskAddress
@@ -446,12 +448,14 @@ export class DcaInstruction {
      * @param {PublicKey} dcaDataAddress
      */
     static swapFromSol(
+        liquidityProgramId,
         ammAddress,
         ammAuthorityAddress,
         ammOpenOrderAddress,
         ammTargetOrderAddress,
         poolCoinTokenAddress,
         poolPcTokenAddress,
+        serumMarketProgramId,
         serumMarketAddress,
         serumBidsAddress,
         serumAskAddress,
@@ -468,12 +472,14 @@ export class DcaInstruction {
         nativeMintAddress
     ) {
         if (
+            !(liquidityProgramId instanceof PublicKey) &&
             !(ammAddress instanceof PublicKey) &&
             !(ammAuthorityAddress instanceof PublicKey) &&
             !(ammOpenOrderAddress instanceof PublicKey) &&
             !(ammTargetOrderAddress instanceof PublicKey) &&
             !(poolCoinTokenAddress instanceof PublicKey) &&
             !(poolPcTokenAddress instanceof PublicKey) &&
+            !(serumMarketProgramId instanceof PublicKey) &&
             !(serumMarketAddress instanceof PublicKey) &&
             !(serumBidsAddress instanceof PublicKey) &&
             !(serumAskAddress instanceof PublicKey) &&
@@ -492,14 +498,15 @@ export class DcaInstruction {
             throw new TypeError("Invalid argument type.")
         }
 
-        console.log("DEVNET_LIQUIDITY_PROGRAM_ID_V4: ", DEVNET_LIQUIDITY_PROGRAM_ID_V4.toString())
+        console.log("liquidityProgramId: ", liquidityProgramId.toString())
         console.log("ammAddress ", ammAddress.toString())
         console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
         console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
         console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
         console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
         console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
-        console.log("DEVNET_SERUM_PROGRAM_ID_V3: ", DEVNET_SERUM_PROGRAM_ID_V3.toString())
+
+        console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
         console.log("serumMarketAddress: ", serumMarketAddress.toString())
         console.log("serumBidsAddress: ", serumBidsAddress.toString())
         console.log("serumAskAddress: ", serumAskAddress.toString())
@@ -507,6 +514,7 @@ export class DcaInstruction {
         console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
         console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
         console.log("serumVaultSigner: ", serumVaultSigner.toString())
+
         console.log("vaultAddress: ", vaultAddress.toString())
         console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
         console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
@@ -520,6 +528,7 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
+                // amm liquidity pool (raydium)
                 AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
@@ -527,6 +536,8 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(ammTargetOrderAddress, false),
                 AccountMetaBuilder.writable(poolCoinTokenAddress, false),
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
+
+                // serum market
                 AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
@@ -535,9 +546,13 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumCoinVaultAddress, false),
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
+
+                // users address (raydium)
                 AccountMetaBuilder.writable(vaultAddress, false),
                 AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                 AccountMetaBuilder.writable(vaultTokenAddress, false),
+
+                // (dca)
                 AccountMetaBuilder.writable(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
@@ -552,12 +567,14 @@ export class DcaInstruction {
 
     /**
      * Generate transaction instruction that swap token to sol
+     * @param {PublicKey} liquidityProgramId
      * @param {PublicKey} ammAddress
      * @param {PublicKey} ammAuthorityAddress
      * @param {PublicKey} ammOpenOrderAddress
      * @param {PublicKey} ammTargetOrderAddress
      * @param {PublicKey} poolCoinTokenAddress
      * @param {PublicKey} poolPcTokenAddress
+     * @param {PublicKey} serumMarketProgramId
      * @param {PublicKey} serumMarketAddress
      * @param {PublicKey} serumBidsAddress
      * @param {PublicKey} serumAskAddress
@@ -565,21 +582,22 @@ export class DcaInstruction {
      * @param {PublicKey} serumCoinVaultAddress
      * @param {PublicKey} serumPcVaultAddress
      * @param {PublicKey} serumVaultSigner
-     * @param {PublicKey} sourceTokenAddress
      * @param {PublicKey} vaultAddress
-     * @param {PublicKey} vaultNativeMintAddress
+     * @param {PublicKey} vaultNativeAddress
+     * @param {PublicKey} vaultTokenAddress
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
-     * @param {PublicKey} nativeMintAddress
      */
     static swapToSol(
+        liquidityProgramId,
         ammAddress,
         ammAuthorityAddress,
         ammOpenOrderAddress,
         ammTargetOrderAddress,
         poolCoinTokenAddress,
         poolPcTokenAddress,
+        serumMarketProgramId,
         serumMarketAddress,
         serumBidsAddress,
         serumAskAddress,
@@ -587,21 +605,23 @@ export class DcaInstruction {
         serumCoinVaultAddress,
         serumPcVaultAddress,
         serumVaultSigner,
-        sourceTokenAddress,
         vaultAddress,
         vaultNativeMintAddress,
+        vaultTokenAddress,
         mintAddress,
         ownerAddress,
         dcaDataAddress,
-        nativeMintAddress,
+        nativeMintAddress
     ) {
         if (
+            !(liquidityProgramId instanceof PublicKey) &&
             !(ammAddress instanceof PublicKey) &&
             !(ammAuthorityAddress instanceof PublicKey) &&
             !(ammOpenOrderAddress instanceof PublicKey) &&
             !(ammTargetOrderAddress instanceof PublicKey) &&
             !(poolCoinTokenAddress instanceof PublicKey) &&
             !(poolPcTokenAddress instanceof PublicKey) &&
+            !(serumMarketProgramId instanceof PublicKey) &&
             !(serumMarketAddress instanceof PublicKey) &&
             !(serumBidsAddress instanceof PublicKey) &&
             !(serumAskAddress instanceof PublicKey) &&
@@ -609,9 +629,9 @@ export class DcaInstruction {
             !(serumCoinVaultAddress instanceof PublicKey) &&
             !(serumPcVaultAddress instanceof PublicKey) &&
             !(serumVaultSigner instanceof PublicKey) &&
-            !(sourceTokenAddress instanceof PublicKey) &&
             !(vaultAddress instanceof PublicKey) &&
             !(vaultNativeMintAddress instanceof PublicKey) &&
+            !(vaultTokenAddress instanceof PublicKey) &&
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
             !(dcaDataAddress instanceof PublicKey) &&
@@ -624,6 +644,7 @@ export class DcaInstruction {
 
         return new TransactionInstruction({
             keys: [
+                // amm liquidity pool (raydium)
                 AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
@@ -631,6 +652,8 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(ammTargetOrderAddress, false),
                 AccountMetaBuilder.writable(poolCoinTokenAddress, false),
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
+
+                // serum market
                 AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
@@ -639,13 +662,18 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(serumCoinVaultAddress, false),
                 AccountMetaBuilder.writable(serumPcVaultAddress, false),
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
-                AccountMetaBuilder.writable(sourceTokenAddress, false),
+
+                // users address (raydium)
                 AccountMetaBuilder.writable(vaultAddress, false),
                 AccountMetaBuilder.writable(vaultNativeMintAddress, false),
-                AccountMetaBuilder.readonly(mintAddress, false),
+                AccountMetaBuilder.writable(vaultTokenAddress, false),
+
+                // (dca)
+                AccountMetaBuilder.writable(mintAddress, false),
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
-                AccountMetaBuilder.readonly(nativeMintAddress, false),
+                AccountMetaBuilder.writable(nativeMintAddress, false),
+                AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
             ],
             programId: DCA_PROGRAM_ID,
             data: data

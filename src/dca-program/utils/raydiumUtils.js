@@ -1,5 +1,6 @@
-import { Liquidity, LIQUIDITY_PROGRAM_ID_V4, Market, SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk"
-import { Connection, PublicKey } from "@solana/web3.js"
+import { Liquidity, LIQUIDITY_PROGRAM_ID_V4, Market, SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk";
+import { Connection, PublicKey } from "@solana/web3.js";
+import axios from "axios";
 
 /**
  * Fetch all keys in a raydium liquidity pool id
@@ -95,3 +96,13 @@ export async function fetchPoolKeys(
         },
     };
 }
+
+export const fetchAllPoolKeys = async () => {
+    try {
+        const response = await axios.get("https://api.raydium.io/v2/sdk/liquidity/mainnet.json");
+        let poolKeysList = [...(response.data.official ?? []), ...(response.data.unOfficial ?? [])];
+        return poolKeysList;
+    } catch (err) {
+        return [];
+    }
+} 

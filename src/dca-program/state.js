@@ -1,9 +1,10 @@
+import { PublicKey } from "@solana/web3.js";
 import { deserialize, deserializeUnchecked } from "borsh";
 
 export class DcaAccount {
     constructor({
         totalAmount,
-        senderAddress,
+        senderAccount,
         mintAddress,
         startTime,
         dcaAmount,
@@ -13,26 +14,14 @@ export class DcaAccount {
         minimumAmountOut
     }) {
         this.totalAmount = totalAmount;
-        this.senderAddress = senderAddress;
+        this.senderAccount = senderAccount;
         this.mintAddress = mintAddress;
         this.startTime = startTime;
         this.dcaAmount = dcaAmount;
         this.dcaTime = dcaTime;
-        this.state = state;
-        this.flag = flag;
+        this.flag = state;
+        this.state = flag;
         this.minimumAmountOut = minimumAmountOut;
-    }
-
-    /**
-     * Decode buffer data to DcaAccount Object
-     * @param { Buffer } data 
-     * @returns Object instance of DcaAccount  
-     */
-    static decode(data) {
-        if (!(data instanceof Buffer)) {
-            throw new TypeError("Not a buffer!")
-        }
-        return deserialize(dcaAccountSchema, this, data);
     }
 
     /**
@@ -41,10 +30,7 @@ export class DcaAccount {
      * @returns 
      */
     static decodeUnchecked(data) {
-        if (!(data instanceof Buffer)) {
-            throw new TypeError("Not a buffer!")
-        }
-        return deserializeUnchecked(dcaAccountSchema, this, data);
+        return deserializeUnchecked(dcaAccountSchema, DcaAccount, data);
     }
 }
 
@@ -54,19 +40,17 @@ export const dcaAccountSchema = new Map([
         DcaAccount,
         {
             kind: "struct",
-            field: [
+            fields: [
                 ["totalAmount", "u64"],
-                ["senderAddress", ["u8", 32]],
+                ["senderAccount", ["u8", 32]],
                 ["mintAddress", ["u8", 32]],
                 ["startTime", "u64"],
                 ["dcaAmount", "u64"],
                 ["dcaTime", "u64"],
-                ["state", "u8"],
                 ["flag", "u8"],
-                ["minimumAmountOut", "u64"]
+                ["state", "u8"],
+                ["minimumAmountOut", "u64"],
             ]
         }
     ]
 ]);
-
-

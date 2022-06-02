@@ -1,45 +1,16 @@
-// import { blob, struct, u8 } from "@solana/buffer-layout";
-// import { u64 } from "@solana/spl-token";
+
 import BN from "bn.js";
-import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, SwapFromSolData, SwapToSolData, WithdrawSolData, WithdrawTokenData } from "../instructionData";
-
-// const setLayout = struct([
-//     u8("instruction"),
-//     blob(8, "amount"),
-
-// ]);
-
-// const initLayout = BufferLayout.struct([
-//     BufferLayout.u8("instruction"),
-//     BufferLayout.blob(8, "start"),
-//     BufferLayout.blob(8, "dca_amount"),
-//     BufferLayout.blob(8, "dca_time"),
-//     BufferLayout.blob(8, "min_amt_out"),
-
-// ]);
-
-// ///No data for Swap to Sol
-// ///No data for Swap from Sol
-// const withdrawtoken = BufferLayout.struct([
-//     BufferLayout.u8("instruction"),
-//     BufferLayout.blob(8, "amount"),
-
-// ]);
-// const withdrawsol = BufferLayout.struct([
-//     BufferLayout.u8("instruction"),
-//     BufferLayout.blob(8, "amount"),
-
-// ]);
-// const fundtoken = BufferLayout.struct([
-//     BufferLayout.u8("instruction"),
-//     BufferLayout.blob(8, "amount"),
-
-// ]);
-// const fundsl = BufferLayout.struct([
-//     BufferLayout.u8("instruction"),
-//     BufferLayout.blob(8, "amount"),
-
-// ]);
+import {
+    DepositSolData,
+    DepositTokenData,
+    FundSolData,
+    FundTokenData,
+    InitializeData,
+    SwapFromSolData,
+    SwapToSolData,
+    WithdrawSolData,
+    WithdrawTokenData
+} from "../instructionData";
 
 describe("instruction data test", () => {
 

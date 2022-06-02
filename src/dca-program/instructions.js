@@ -4,12 +4,12 @@ import {
     TransactionInstruction,
 } from "@solana/web3.js";
 import {
-    DCA_PROGRAM_ID,
-    TOKEN_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID,
-    SYSVAR_RENT_PUBKEY,
-    DEVNET_LIQUIDITY_PROGRAM_ID_V4,
-    DEVNET_SERUM_PROGRAM_ID_V3
+    DcaProgramId,
+    TokenProgramId,
+    AssociatedTokenProgramId,
+    SysvarRent,
+    DevnetLiquidityProgramIdV4,
+    DevnetSerumProgramIdV3,
 } from "./constants"
 import {
     DepositSolData,
@@ -76,18 +76,18 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.writable(vaultNativeMintAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             });
         } catch (e) {
@@ -139,18 +139,18 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             });
 
@@ -197,7 +197,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(vaultAddress, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             })
         } catch (e) {
@@ -233,16 +233,16 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             })
         } catch (e) {
@@ -296,19 +296,19 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                     AccountMetaBuilder.writable(nativeMintAddress, true),
                     AccountMetaBuilder.writable(vaultNativeMintAddress, true),
                     AccountMetaBuilder.writable(ownerNativeMintAddress, true),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             })
         } catch (e) {
@@ -345,16 +345,16 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             })
         } catch (e) {
@@ -404,18 +404,18 @@ export class DcaInstruction {
                 keys: [
                     AccountMetaBuilder.writable(ownerAddress, true),
                     AccountMetaBuilder.writable(vaultAddress, false),
-                    AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(TokenProgramId, false),
                     AccountMetaBuilder.writable(mintAddress, false),
                     AccountMetaBuilder.writable(nativeMintAddress, false),
                     AccountMetaBuilder.readonly(SystemProgram.programId, false),
-                    AccountMetaBuilder.readonly(SYSVAR_RENT_PUBKEY, false),
+                    AccountMetaBuilder.readonly(SysvarRent, false),
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
-                    AccountMetaBuilder.readonly(ASSOCIATED_TOKEN_PROGRAM_ID, false),
+                    AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
                     AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
-                programId: DCA_PROGRAM_ID,
+                programId: DcaProgramId,
                 data: data
             })
         } catch (e) {
@@ -522,14 +522,14 @@ export class DcaInstruction {
         console.log("ownerAddress: ", ownerAddress.toString())
         console.log("dcaDataAddress: ", dcaDataAddress.toString())
         console.log("nativeMintAddress: ", nativeMintAddress.toString())
-        console.log("TOKEN_PROGRAM_ID: ", TOKEN_PROGRAM_ID.toString())
+        console.log("TokenProgramId: ", TokenProgramId.toString())
 
         const data = new SwapFromSolData().encode();
 
         return new TransactionInstruction({
             keys: [
                 // amm liquidity pool (raydium)
-                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
@@ -538,8 +538,8 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
 
                 // serum market
-                AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
-                AccountMetaBuilder.writable(serumMarketAddress, false),
+                AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
+                AccountMetaBuilder.writable(serumMarketAddress),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
                 AccountMetaBuilder.writable(serumEventQueueAddress, false),
@@ -557,9 +557,9 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
                 AccountMetaBuilder.writable(nativeMintAddress, false),
-                AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                AccountMetaBuilder.readonly(TokenProgramId, false),
             ],
-            programId: DCA_PROGRAM_ID,
+            programId: DcaProgramId,
             data: data
         });
     }
@@ -645,7 +645,7 @@ export class DcaInstruction {
         return new TransactionInstruction({
             keys: [
                 // amm liquidity pool (raydium)
-                AccountMetaBuilder.readonly(DEVNET_LIQUIDITY_PROGRAM_ID_V4, false),
+                AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
@@ -654,8 +654,8 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
 
                 // serum market
-                AccountMetaBuilder.readonly(DEVNET_SERUM_PROGRAM_ID_V3, false),
-                AccountMetaBuilder.writable(serumMarketAddress, false),
+                AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
+                AccountMetaBuilder.writable(serumMarketAddress),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
                 AccountMetaBuilder.writable(serumEventQueueAddress, false),
@@ -673,9 +673,9 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(ownerAddress, false),
                 AccountMetaBuilder.writable(dcaDataAddress, false),
                 AccountMetaBuilder.writable(nativeMintAddress, false),
-                AccountMetaBuilder.readonly(TOKEN_PROGRAM_ID, false),
+                AccountMetaBuilder.readonly(TokenProgramId, false),
             ],
-            programId: DCA_PROGRAM_ID,
+            programId: DcaProgramId,
             data: data
         });
     }

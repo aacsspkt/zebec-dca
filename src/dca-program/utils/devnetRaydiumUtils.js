@@ -1,9 +1,9 @@
 import { findProgramAddress, getMultipleAccountsInfo, Liquidity, LIQUIDITY_STATE_LAYOUT_V4, Market } from "@raydium-io/raydium-sdk";
 import { PublicKey } from "@solana/web3.js";
-import { DEVNET_LIQUIDITY_PROGRAM_ID_V4, DEVNET_SERUM_PROGRAM_ID_V3 } from "../constants";
+import { DevnetLiquidityProgramIdV4, DevnetSerumProgramIdV3 } from "../constants";
 
-const LIQUIDITY_PROGRAM_ID_V4 = DEVNET_LIQUIDITY_PROGRAM_ID_V4
-const SERUM_PROGRAM_ID_V3 = DEVNET_SERUM_PROGRAM_ID_V3
+const LIQUIDITY_PROGRAM_ID_V4 = DevnetLiquidityProgramIdV4;
+const SERUM_PROGRAM_ID_V3 = DevnetSerumProgramIdV3;
 
 
 async function getAssociatedId({ programId, marketId }) {

@@ -1,23 +1,38 @@
-import { PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
-
-export {
+import { PublicKey, Connection, clusterApiUrl, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
+import {
     TOKEN_PROGRAM_ID,
     NATIVE_MINT,
     ASSOCIATED_TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
+import { LIQUIDITY_PROGRAM_ID_V4 } from "@raydium-io/raydium-sdk"
+import { SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk"
 
-export {
-    SYSVAR_RENT_PUBKEY
-} from "@solana/web3.js"
+/** System variable rent public key */
+export const SysvarRent = SYSVAR_RENT_PUBKEY;
 
-/** The id of DCA Program. */
-export const DCA_PROGRAM_ID = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tzAATRp19c7");
+/** Native mint address */
+export const NativeMint = NATIVE_MINT;
 
-/** Json RPC client to communicate with Solana blockchain */
+/** The token program id. */
+export const TokenProgramId = TOKEN_PROGRAM_ID;
+
+/** The associated token program id.  */
+export const AssociatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID;
+
+/** The dca program id. */
+export const DcaProgramId = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tzAATRp19c7");
+
+/** Json RPC client to communicate with Solana blockchain. */
 export const connection = new Connection(clusterApiUrl("devnet"));
 
-export { LIQUIDITY_PROGRAM_ID_V4 } from "@raydium-io/raydium-sdk"
-export const DEVNET_LIQUIDITY_PROGRAM_ID_V4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
+/** The raydium liquidity pool program v4 id. */
+export const LiquidityProgramIdV4 = LIQUIDITY_PROGRAM_ID_V4;
 
-export { SERUM_PROGRAM_ID_V3 } from "@raydium-io/raydium-sdk"
-export const DEVNET_SERUM_PROGRAM_ID_V3 = new PublicKey("DESVgJVGajEgKGXhb6XmqDHGz3VjdgP7rEVESBgxmroY");
+/** The devnet raydium liquidity pool program v4 id. */
+export const DevnetLiquidityProgramIdV4 = new PublicKey("9rpQHSyFVM1dkkHFQ2TtTzPEW7DVmEyPmN8wVniqJtuC");
+
+/** The serum market program id. */
+export const SerumProgramIdV3 = SERUM_PROGRAM_ID_V3;
+
+/** The devnet serum market program id. */
+export const DevnetSerumProgramIdV3 = new PublicKey("DESVgJVGajEgKGXhb6XmqDHGz3VjdgP7rEVESBgxmroY");

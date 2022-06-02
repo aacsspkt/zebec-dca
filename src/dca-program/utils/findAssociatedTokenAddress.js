@@ -1,4 +1,4 @@
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "../constants";
+import { AssociatedTokenProgramId, TokenProgramId } from "../constants";
 import { PublicKey } from "@solana/web3.js";
 
 /** 
@@ -9,9 +9,9 @@ import { PublicKey } from "@solana/web3.js";
 export async function findAssociatedTokenAddress(owner, mint) {
     return await PublicKey.findProgramAddress([
         owner.toBuffer(),
-        TOKEN_PROGRAM_ID.toBuffer(),
+        TokenProgramId.toBuffer(),
         mint.toBuffer()
     ],
-        ASSOCIATED_TOKEN_PROGRAM_ID
+        AssociatedTokenProgramId
     );
 }

@@ -1,4 +1,3 @@
-import { Connection, PublicKey, Commitment } from "@solana/web3.js";
 import { MintLayout, TOKEN_PROGRAM_ID, } from "@solana/spl-token";
 
 
@@ -19,7 +18,7 @@ export async function getMintInfo(
     const info = await connection.getAccountInfo(address, commitment);
     if (!info) throw new Error("Token not found.");
     if (!info.owner.equals(programId)) throw new Error("Mint is not owned by Token Program.");
-    if (info.data.length != MintLayout.span) throw new Error("Account size of mint is invalid.");
+    if (info.data.length !== MintLayout.span) throw new Error("Account size of mint is invalid.");
 
     const rawMint = MintLayout.decode(Uint8Array.from(info.data));
 

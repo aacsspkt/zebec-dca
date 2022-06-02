@@ -1,5 +1,4 @@
 import { PublicKey, SendTransactionError } from '@solana/web3.js';
-import { deserializeUnchecked } from 'borsh';
 import './App.css';
 
 import {
@@ -15,10 +14,9 @@ import {
   swapFromSol,
   swapToSol,
   DcaAccount,
-  dcaAccountSchema,
+  getMintInfo,
 } from "./dca-program";
 
-import { fetchAllPoolKeys } from "./dca-program/utils/raydium_utils";
 
 function App() {
   const onDepositTokenClick = async () => {
@@ -61,17 +59,19 @@ function App() {
       console.log(data.dcaDataAddress);
 
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
+      console.log(e.logs)
     }
   }
 
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
-      const startTime = Math.floor(Date.now() / 1000) + (1 * 60); // add 1 min
+      const dcaData = "Dd9dx6sqGruVahDcE1pnDPdmPNzZPE1vozk1y36RYXfi";
+      const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 1 min
       const dcaAmount = 1;
       const dcaTime = 3 * 60  // 3 min
+
       const minimumAmountOut = 1.5;
 
       const { status, data } = await initialize(
@@ -166,7 +166,7 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
+      const dcaData = "9hcx38dqHWyfqoANcCTFbCLgyYb5PZHgPwxPT3Z5E3J4";
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const transferAmount = 1;
 
@@ -182,7 +182,7 @@ function App() {
       console.log(data.signature);
 
     } catch (e) {
-      console.log(e);
+      console.log(e, e.logs);
     }
   }
 
@@ -190,7 +190,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
+      const dcaData = "Dd9dx6sqGruVahDcE1pnDPdmPNzZPE1vozk1y36RYXfi";
       const { status, data } = await swapFromSol(
         connection,
         owner,
@@ -200,7 +200,7 @@ function App() {
       console.log(status);
       console.log(data.signature);
     } catch (e) {
-      console.log((e instanceof SendTransactionError) ? e.logs : e);
+      console.log(e, e.logs);
     }
   }
 
@@ -224,30 +224,25 @@ function App() {
 
   const onDcaDataClick = async () => {
     try {
-      const address = "JC64t54rtCjf7txa2MJorteh1NXyU36YSddxjU2JmLN8";
+      const address = "FcBVbygBXkMWuH1j9ZY8fRjpvhosZh8SwEZ8d76WUW36";
       let dcaAccount = await connection.getAccountInfo(new PublicKey(address), "confirmed");
-      console.log(dcaAccount.data);
-      let dcaData = deserializeUnchecked(dcaAccountSchema, DcaAccount, dcaAccount.data)
+      console.log(dcaAccount.data.length);
+      let dcaData = DcaAccount.decodeUnchecked(dcaAccount.data)
       console.log("Dca Account Data", dcaData);
     } catch (e) {
       console.log("error: ", e);
     }
   }
 
-
-
-  const onFetchPoolKeys = async () => {
-    const list = await fetchAllPoolKeys(connection);
-    list.filter(poolKeys => poolKeys.quoteMint == "So11111111111111111111111111111111111111112")
-      .map(poolKeys => {
-        console.log(`Pool Id: ${poolKeys.id}`,
-          `base mint: ${poolKeys.baseMint}`,
-          `quote mint: ${poolKeys.quoteMint}`,
-        );
-      })
+  const onGetMintInfoClick = async () => {
+    try {
+      const address = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const mintInfo = await getMintInfo(connection, new PublicKey(address));
+      console.log(mintInfo);
+    } catch (e) {
+      console.log(e);
+    }
   }
-
-  // onFetchPoolKeys();
 
   return (
     <div className="App">
@@ -262,6 +257,7 @@ function App() {
       <button className='btn' onClick={onSwapFromSolClick}>Swap From Sol</button>
       <button className='btn' onClick={onSwapToSolClick}>Swap To Sol</button>
       <button className='btn' onClick={onDcaDataClick}>Get Dca Account Data</button>
+      <button className='btn' onClick={onGetMintInfoClick}>Get Mint Info Data</button>
     </div>
   );
 }

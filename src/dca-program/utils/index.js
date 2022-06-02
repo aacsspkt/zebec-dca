@@ -6,3 +6,4 @@ export * from "./fetchTokenList"
 export * from "./accountMetaBuilder";
 export * from "./devnetRaydiumUtils";
 export * from "./raydiumUtils";
+export * from "./getMintInfo";

@@ -6,8 +6,15 @@ describe("convert to lamport test", () => {
 
     test("should pass", () => {
         const amount = 0.5;
+        const expectation = new BN("500000000");
         const reality = convertToLamports(amount);
-        const actual = new BN("500000000")
-        expect(reality).toEqual(actual);
+        expect(reality).toEqual(expectation);
     });
+
+    test("should pass", () => {
+        const amount = 1;
+        const expectation = new BN("1000000");
+        const reality = convertToLamports(amount, 6);
+        expect(reality).toEqual(expectation);
+    })
 });

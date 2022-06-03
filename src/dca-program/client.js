@@ -438,6 +438,7 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
                 ownerAddress,
                 dcaDataAddress,
                 NativeMint,
+                minAmountOut
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;

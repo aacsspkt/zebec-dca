@@ -446,6 +446,7 @@ export class DcaInstruction {
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
+     * @param {BN} minimumAmountOut
      */
     static swapFromSol(
         liquidityProgramId,
@@ -469,7 +470,8 @@ export class DcaInstruction {
         mintAddress,
         ownerAddress,
         dcaDataAddress,
-        nativeMintAddress
+        nativeMintAddress,
+        minimumAmountOut
     ) {
         if (
             !(liquidityProgramId instanceof PublicKey) &&
@@ -493,38 +495,39 @@ export class DcaInstruction {
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
             !(dcaDataAddress instanceof PublicKey) &&
-            !(nativeMintAddress instanceof PublicKey)
+            !(nativeMintAddress instanceof PublicKey) &&
+            !isBN(minimumAmountOut)
         ) {
             throw new TypeError("Invalid argument type.")
         }
 
-        // console.log("liquidityProgramId: ", liquidityProgramId.toString())
-        // console.log("ammAddress ", ammAddress.toString())
-        // console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
-        // console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
-        // console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
-        // console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
-        // console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
+        console.log("liquidityProgramId: ", liquidityProgramId.toString())
+        console.log("ammAddress ", ammAddress.toString())
+        console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
+        console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
+        console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
+        console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
+        console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
 
-        // console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
-        // console.log("serumMarketAddress: ", serumMarketAddress.toString())
-        // console.log("serumBidsAddress: ", serumBidsAddress.toString())
-        // console.log("serumAskAddress: ", serumAskAddress.toString())
-        // console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
-        // console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
-        // console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
-        // console.log("serumVaultSigner: ", serumVaultSigner.toString())
+        console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
+        console.log("serumMarketAddress: ", serumMarketAddress.toString())
+        console.log("serumBidsAddress: ", serumBidsAddress.toString())
+        console.log("serumAskAddress: ", serumAskAddress.toString())
+        console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
+        console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
+        console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
+        console.log("serumVaultSigner: ", serumVaultSigner.toString())
 
-        // console.log("vaultAddress: ", vaultAddress.toString())
-        // console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
-        // console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
-        // console.log("mintAddress: ", mintAddress.toString())
-        // console.log("ownerAddress: ", ownerAddress.toString())
-        // console.log("dcaDataAddress: ", dcaDataAddress.toString())
-        // console.log("nativeMintAddress: ", nativeMintAddress.toString())
-        // console.log("TokenProgramId: ", TokenProgramId.toString())
+        console.log("vaultAddress: ", vaultAddress.toString())
+        console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
+        console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
+        console.log("mintAddress: ", mintAddress.toString())
+        console.log("ownerAddress: ", ownerAddress.toString())
+        console.log("dcaDataAddress: ", dcaDataAddress.toString())
+        console.log("nativeMintAddress: ", nativeMintAddress.toString())
+        console.log("TokenProgramId: ", TokenProgramId.toString())
 
-        const data = new SwapFromSolData().encode();
+        const data = new SwapFromSolData(minimumAmountOut).encode();
 
         return new TransactionInstruction({
             keys: [
@@ -588,6 +591,7 @@ export class DcaInstruction {
      * @param {PublicKey} mintAddress
      * @param {PublicKey} ownerAddress
      * @param {PublicKey} dcaDataAddress
+     * @param {BN} minimumAmountOut
      */
     static swapToSol(
         liquidityProgramId,
@@ -611,7 +615,8 @@ export class DcaInstruction {
         mintAddress,
         ownerAddress,
         dcaDataAddress,
-        nativeMintAddress
+        nativeMintAddress,
+        minimumAmountOut
     ) {
         if (
             !(liquidityProgramId instanceof PublicKey) &&
@@ -635,12 +640,13 @@ export class DcaInstruction {
             !(mintAddress instanceof PublicKey) &&
             !(ownerAddress instanceof PublicKey) &&
             !(dcaDataAddress instanceof PublicKey) &&
-            !(nativeMintAddress instanceof PublicKey)
+            !(nativeMintAddress instanceof PublicKey) &&
+            !isBN(minimumAmountOut)
         ) {
             throw new TypeError("Invalid argument type.")
         }
 
-        const data = new SwapToSolData().encode();
+        const data = new SwapToSolData(minimumAmountOut).encode();
 
         return new TransactionInstruction({
             keys: [

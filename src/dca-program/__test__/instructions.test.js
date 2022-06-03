@@ -124,6 +124,7 @@ describe("intruction test", () => {
         const [vaultAta,] = await findAssociatedTokenAddress(vault, mint);
         const poolId = new PublicKey("384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ");
         const poolKeys = await fetchPoolKeysDevnet(connection, poolId);
+        const amount = new BN("100000000");
         const actual = DcaInstruction.swapFromSol(
             poolKeys.programId,
             poolKeys.id,
@@ -146,10 +147,12 @@ describe("intruction test", () => {
             mint,
             owner,
             dcaData,
-            NativeMint
+            NativeMint,
+            amount
         );
 
-        const data = new SwapFromSolData().encode();
+        const data = new SwapFromSolData(amount).encode();
+
         const keys = [
             AccountMetaBuilder.readonly(poolKeys.programId, false),
             AccountMetaBuilder.writable(poolKeys.id, false),
@@ -187,6 +190,7 @@ describe("intruction test", () => {
         const [vaultAta,] = await findAssociatedTokenAddress(vault, mint);
         const poolId = new PublicKey("384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ");
         const poolKeys = await fetchPoolKeysDevnet(connection, poolId);
+        const amount = new BN("100000000")
         const actual = DcaInstruction.swapToSol(
             poolKeys.programId,
             poolKeys.id,
@@ -209,20 +213,21 @@ describe("intruction test", () => {
             mint,
             owner,
             dcaData,
-            NativeMint
+            NativeMint,
+            amount
         );
 
-        const data = new SwapToSolData().encode();
+        const data = new SwapToSolData(amount).encode();
         const keys = [
-            AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
+            AccountMetaBuilder.readonly(poolKeys.programId, false),
             AccountMetaBuilder.writable(poolKeys.id, false),
             AccountMetaBuilder.readonly(poolKeys.authority, false),
             AccountMetaBuilder.writable(poolKeys.openOrders, false),
             AccountMetaBuilder.writable(poolKeys.targetOrders, false),
             AccountMetaBuilder.writable(poolKeys.baseVault, false),
             AccountMetaBuilder.writable(poolKeys.quoteVault, false),
-            AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
-            AccountMetaBuilder.writable(poolKeys.marketId),
+            AccountMetaBuilder.readonly(poolKeys.marketProgramId, false),
+            AccountMetaBuilder.writable(poolKeys.marketId, false),
             AccountMetaBuilder.writable(poolKeys.marketBids, false),
             AccountMetaBuilder.writable(poolKeys.marketAsks, false),
             AccountMetaBuilder.writable(poolKeys.marketEventQueue, false),
@@ -259,7 +264,6 @@ describe("intruction test", () => {
             dcaData,
             amount
         );
-
         const keys = [
             AccountMetaBuilder.writable(owner, true),
             AccountMetaBuilder.writable(vault, false),
@@ -272,7 +276,6 @@ describe("intruction test", () => {
             AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
             AccountMetaBuilder.writable(dcaData, false),
         ];
-
         const data = new WithdrawTokenData(amount).encode();
 
         expect(actual.data).toEqual(data);
@@ -312,9 +315,9 @@ describe("intruction test", () => {
             AccountMetaBuilder.writable(ownerAta, false),
             AccountMetaBuilder.writable(vaultAta, false),
             AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
-            AccountMetaBuilder.writable(dcaData, false),
-            AccountMetaBuilder.writable(NativeMint, false),
-            AccountMetaBuilder.writable(vaultAnma, false),
+            AccountMetaBuilder.writable(dcaData, true),
+            AccountMetaBuilder.writable(NativeMint, true),
+            AccountMetaBuilder.writable(vaultAnma, true),
             AccountMetaBuilder.writable(ownerAnma, false),
         ];
 

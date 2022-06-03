@@ -67,7 +67,7 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Dd9dx6sqGruVahDcE1pnDPdmPNzZPE1vozk1y36RYXfi";
+      const dcaData = "FmLrGWhDRb2QnBydpAFaaZfW4yT2K2sV2CGv9bnQ5DD4";
       const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 1 min
       const dcaAmount = 1;
       const dcaTime = 3 * 60  // 3 min
@@ -96,7 +96,7 @@ function App() {
   const onWithdrawTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Ey2ByFdYYWgpxRCvdcQehnfYdzQPK8wQxBEFHLTgGC1w";
+      const dcaData = "FmLrGWhDRb2QnBydpAFaaZfW4yT2K2sV2CGv9bnQ5DD4";
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const amount = 0.5;
 
@@ -113,6 +113,7 @@ function App() {
 
     } catch (e) {
       console.log(e);
+      console.log(e.logs);
     }
   }
 
@@ -166,7 +167,7 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "9hcx38dqHWyfqoANcCTFbCLgyYb5PZHgPwxPT3Z5E3J4";
+      const dcaData = "M33BsD2rp6z5atbUaJYw5gHBAVyku89jNXWUVjVhNVg";
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const transferAmount = 1;
 
@@ -190,7 +191,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "Dd9dx6sqGruVahDcE1pnDPdmPNzZPE1vozk1y36RYXfi";
+      const dcaData = "FmLrGWhDRb2QnBydpAFaaZfW4yT2K2sV2CGv9bnQ5DD4";
       const { status, data } = await swapFromSol(
         connection,
         owner,

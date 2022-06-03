@@ -240,7 +240,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
-                    AccountMetaBuilder.writable(dcaDataAddress, true),
+                    AccountMetaBuilder.writable(dcaDataAddress, false),
                 ],
                 programId: DcaProgramId,
                 data: data
@@ -306,7 +306,7 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(dcaDataAddress, true),
                     AccountMetaBuilder.writable(nativeMintAddress, true),
                     AccountMetaBuilder.writable(vaultNativeMintAddress, true),
-                    AccountMetaBuilder.writable(ownerNativeMintAddress, true),
+                    AccountMetaBuilder.writable(ownerNativeMintAddress, false),
                 ],
                 programId: DcaProgramId,
                 data: data
@@ -498,38 +498,38 @@ export class DcaInstruction {
             throw new TypeError("Invalid argument type.")
         }
 
-        console.log("liquidityProgramId: ", liquidityProgramId.toString())
-        console.log("ammAddress ", ammAddress.toString())
-        console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
-        console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
-        console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
-        console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
-        console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
+        // console.log("liquidityProgramId: ", liquidityProgramId.toString())
+        // console.log("ammAddress ", ammAddress.toString())
+        // console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
+        // console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
+        // console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
+        // console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
+        // console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
 
-        console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
-        console.log("serumMarketAddress: ", serumMarketAddress.toString())
-        console.log("serumBidsAddress: ", serumBidsAddress.toString())
-        console.log("serumAskAddress: ", serumAskAddress.toString())
-        console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
-        console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
-        console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
-        console.log("serumVaultSigner: ", serumVaultSigner.toString())
+        // console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
+        // console.log("serumMarketAddress: ", serumMarketAddress.toString())
+        // console.log("serumBidsAddress: ", serumBidsAddress.toString())
+        // console.log("serumAskAddress: ", serumAskAddress.toString())
+        // console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
+        // console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
+        // console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
+        // console.log("serumVaultSigner: ", serumVaultSigner.toString())
 
-        console.log("vaultAddress: ", vaultAddress.toString())
-        console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
-        console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
-        console.log("mintAddress: ", mintAddress.toString())
-        console.log("ownerAddress: ", ownerAddress.toString())
-        console.log("dcaDataAddress: ", dcaDataAddress.toString())
-        console.log("nativeMintAddress: ", nativeMintAddress.toString())
-        console.log("TokenProgramId: ", TokenProgramId.toString())
+        // console.log("vaultAddress: ", vaultAddress.toString())
+        // console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
+        // console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
+        // console.log("mintAddress: ", mintAddress.toString())
+        // console.log("ownerAddress: ", ownerAddress.toString())
+        // console.log("dcaDataAddress: ", dcaDataAddress.toString())
+        // console.log("nativeMintAddress: ", nativeMintAddress.toString())
+        // console.log("TokenProgramId: ", TokenProgramId.toString())
 
         const data = new SwapFromSolData().encode();
 
         return new TransactionInstruction({
             keys: [
                 // amm liquidity pool (raydium)
-                AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
+                AccountMetaBuilder.readonly(liquidityProgramId, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
@@ -538,8 +538,8 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
 
                 // serum market
-                AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
-                AccountMetaBuilder.writable(serumMarketAddress),
+                AccountMetaBuilder.readonly(serumMarketProgramId, false),
+                AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
                 AccountMetaBuilder.writable(serumEventQueueAddress, false),
@@ -655,7 +655,7 @@ export class DcaInstruction {
 
                 // serum market
                 AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
-                AccountMetaBuilder.writable(serumMarketAddress),
+                AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
                 AccountMetaBuilder.writable(serumEventQueueAddress, false),

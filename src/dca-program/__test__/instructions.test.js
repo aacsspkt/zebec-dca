@@ -1,9 +1,9 @@
 import { PublicKey, SystemProgram } from "@solana/web3.js"
 import BN from "bn.js";
-import { DcaProgramId, AssociatedTokenProgramId, TokenProgramId, NativeMint, SysvarRent } from "../constants";
-import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, WithdrawSolData, WithdrawTokenData } from "../instructionData";
+import { DcaProgramId, AssociatedTokenProgramId, TokenProgramId, NativeMint, SysvarRent, connection, DevnetLiquidityProgramIdV4, DevnetSerumProgramIdV3 } from "../constants";
+import { DepositSolData, DepositTokenData, FundSolData, FundTokenData, InitializeData, SwapFromSolData, SwapToSolData, WithdrawSolData, WithdrawTokenData } from "../instructionData";
 import { DcaInstruction } from "../instructions";
-import { AccountMetaBuilder, findAssociatedTokenAddress, findDcaDerivedAddress } from "../utils";
+import { AccountMetaBuilder, fetchPoolKeysDevnet, findAssociatedTokenAddress, findDcaDerivedAddress } from "../utils";
 
 
 describe("intruction test", () => {
@@ -118,9 +118,131 @@ describe("intruction test", () => {
         expect(actual.programId).toEqual(DcaProgramId);
     })
 
+    test("swapFromSol instruction test", async () => {
+        const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaData.toBuffer()]);
+        const [vaultAnma,] = await findAssociatedTokenAddress(vault, NativeMint);
+        const [vaultAta,] = await findAssociatedTokenAddress(vault, mint);
+        const poolId = new PublicKey("384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ");
+        const poolKeys = await fetchPoolKeysDevnet(connection, poolId);
+        const actual = DcaInstruction.swapFromSol(
+            poolKeys.programId,
+            poolKeys.id,
+            poolKeys.authority,
+            poolKeys.openOrders,
+            poolKeys.targetOrders,
+            poolKeys.baseVault,
+            poolKeys.quoteVault,
+            poolKeys.marketProgramId,
+            poolKeys.marketId,
+            poolKeys.marketBids,
+            poolKeys.marketAsks,
+            poolKeys.marketEventQueue,
+            poolKeys.marketBaseVault,
+            poolKeys.marketQuoteVault,
+            poolKeys.marketAuthority,
+            vault,
+            vaultAnma,
+            vaultAta,
+            mint,
+            owner,
+            dcaData,
+            NativeMint
+        );
 
+        const data = new SwapFromSolData().encode();
+        const keys = [
+            AccountMetaBuilder.readonly(poolKeys.programId, false),
+            AccountMetaBuilder.writable(poolKeys.id, false),
+            AccountMetaBuilder.readonly(poolKeys.authority, false),
+            AccountMetaBuilder.writable(poolKeys.openOrders, false),
+            AccountMetaBuilder.writable(poolKeys.targetOrders, false),
+            AccountMetaBuilder.writable(poolKeys.baseVault, false),
+            AccountMetaBuilder.writable(poolKeys.quoteVault, false),
+            AccountMetaBuilder.readonly(poolKeys.marketProgramId, false),
+            AccountMetaBuilder.writable(poolKeys.marketId, false),
+            AccountMetaBuilder.writable(poolKeys.marketBids, false),
+            AccountMetaBuilder.writable(poolKeys.marketAsks, false),
+            AccountMetaBuilder.writable(poolKeys.marketEventQueue, false),
+            AccountMetaBuilder.writable(poolKeys.marketBaseVault, false),
+            AccountMetaBuilder.writable(poolKeys.marketQuoteVault, false),
+            AccountMetaBuilder.readonly(poolKeys.marketAuthority, false),
+            AccountMetaBuilder.writable(vault, false),
+            AccountMetaBuilder.writable(vaultAnma, false),
+            AccountMetaBuilder.writable(vaultAta, false),
+            AccountMetaBuilder.writable(mint, false),
+            AccountMetaBuilder.writable(owner, false),
+            AccountMetaBuilder.writable(dcaData, false),
+            AccountMetaBuilder.writable(NativeMint, false),
+            AccountMetaBuilder.readonly(TokenProgramId, false),
+        ];
 
+        expect(actual.data).toEqual(data);
+        expect(actual.keys).toEqual(keys);
+        expect(actual.programId).toEqual(DcaProgramId);
+    });
 
+    test("swapToSol instruction test", async () => {
+        const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaData.toBuffer()]);
+        const [vaultAnma,] = await findAssociatedTokenAddress(vault, NativeMint);
+        const [vaultAta,] = await findAssociatedTokenAddress(vault, mint);
+        const poolId = new PublicKey("384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ");
+        const poolKeys = await fetchPoolKeysDevnet(connection, poolId);
+        const actual = DcaInstruction.swapToSol(
+            poolKeys.programId,
+            poolKeys.id,
+            poolKeys.authority,
+            poolKeys.openOrders,
+            poolKeys.targetOrders,
+            poolKeys.baseVault,
+            poolKeys.quoteVault,
+            poolKeys.marketProgramId,
+            poolKeys.marketId,
+            poolKeys.marketBids,
+            poolKeys.marketAsks,
+            poolKeys.marketEventQueue,
+            poolKeys.marketBaseVault,
+            poolKeys.marketQuoteVault,
+            poolKeys.marketAuthority,
+            vault,
+            vaultAnma,
+            vaultAta,
+            mint,
+            owner,
+            dcaData,
+            NativeMint
+        );
+
+        const data = new SwapToSolData().encode();
+        const keys = [
+            AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
+            AccountMetaBuilder.writable(poolKeys.id, false),
+            AccountMetaBuilder.readonly(poolKeys.authority, false),
+            AccountMetaBuilder.writable(poolKeys.openOrders, false),
+            AccountMetaBuilder.writable(poolKeys.targetOrders, false),
+            AccountMetaBuilder.writable(poolKeys.baseVault, false),
+            AccountMetaBuilder.writable(poolKeys.quoteVault, false),
+            AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
+            AccountMetaBuilder.writable(poolKeys.marketId),
+            AccountMetaBuilder.writable(poolKeys.marketBids, false),
+            AccountMetaBuilder.writable(poolKeys.marketAsks, false),
+            AccountMetaBuilder.writable(poolKeys.marketEventQueue, false),
+            AccountMetaBuilder.writable(poolKeys.marketBaseVault, false),
+            AccountMetaBuilder.writable(poolKeys.marketQuoteVault, false),
+            AccountMetaBuilder.readonly(poolKeys.marketAuthority, false),
+            AccountMetaBuilder.writable(vault, false),
+            AccountMetaBuilder.writable(vaultAnma, false),
+            AccountMetaBuilder.writable(vaultAta, false),
+            AccountMetaBuilder.writable(mint, false),
+            AccountMetaBuilder.writable(owner, false),
+            AccountMetaBuilder.writable(dcaData, false),
+            AccountMetaBuilder.writable(NativeMint, false),
+            AccountMetaBuilder.readonly(TokenProgramId, false),
+        ];
+
+        expect(actual.data).toEqual(data);
+        expect(actual.keys).toEqual(keys);
+        expect(actual.programId).toEqual(DcaProgramId);
+    });
 
     test("withdrawToken instruction test", async () => {
         const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaData.toBuffer()]);
@@ -148,7 +270,7 @@ describe("intruction test", () => {
             AccountMetaBuilder.writable(ownerAta, false),
             AccountMetaBuilder.writable(vaultAta, false),
             AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
-            AccountMetaBuilder.writable(dcaData, true),
+            AccountMetaBuilder.writable(dcaData, false),
         ];
 
         const data = new WithdrawTokenData(amount).encode();
@@ -180,7 +302,6 @@ describe("intruction test", () => {
         );
 
         const data = new WithdrawSolData(amount).encode();
-
         const keys = [
             AccountMetaBuilder.writable(owner, true),
             AccountMetaBuilder.writable(vault, false),
@@ -191,10 +312,10 @@ describe("intruction test", () => {
             AccountMetaBuilder.writable(ownerAta, false),
             AccountMetaBuilder.writable(vaultAta, false),
             AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
-            AccountMetaBuilder.writable(dcaData, true),
-            AccountMetaBuilder.writable(NativeMint, true),
-            AccountMetaBuilder.writable(vaultAnma, true),
-            AccountMetaBuilder.writable(ownerAnma, true),
+            AccountMetaBuilder.writable(dcaData, false),
+            AccountMetaBuilder.writable(NativeMint, false),
+            AccountMetaBuilder.writable(vaultAnma, false),
+            AccountMetaBuilder.writable(ownerAnma, false),
         ];
 
         expect(actual.data).toEqual(data);

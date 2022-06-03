@@ -1,9 +1,11 @@
-import { Connection, Keypair, PublicKey, sendAndConfirmRawTransaction, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmRawTransaction, Transaction } from "@solana/web3.js";
 import BN from "bn.js";
 import { NativeMint } from "./constants";
 import { DcaInstruction } from "./instructions";
 import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys, fetchAllPoolKeys, fetchPoolKeysDevnet, getMintInfo } from "./utils";
 import { Liquidity, Percent, Token, TokenAmount } from "@raydium-io/raydium-sdk";
+import { DcaAccount } from "./state";
+import BigNumber from "bignumber.js";
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -254,7 +256,9 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-        const transferAmount = convertToLamports(amount);
+        const mintInfo = await getMintInfo(connection, mintAddress);
+        console.log(mintInfo.decimals);
+        const transferAmount = convertToLamports(amount, mintInfo.decimals);
 
         let txn = new Transaction()
             .add(DcaInstruction.withdrawToken(
@@ -269,6 +273,7 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         const signedTxn = await window.solana.signTransaction(txn);
+
 
         const signature = await sendAndConfirmRawTransaction(
             connection,
@@ -395,6 +400,20 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             new PublicKey(POOL_ID)
         );
 
+        const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
+        const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
+        const amountIn = new TokenAmount(
+            new Token(
+                poolKeys.baseMint,
+                poolInfo.baseDecimals
+            ),
+            new BN(dcaInfo.dcaAmount).toString(),
+            false
+        )
+        const currencyOut = new Token(poolKeys.quoteMint, poolInfo.quoteDecimals);
+        const slippage = new Percent(5, 100);
+        const { amountOut, minAmountOut, currentPrice, executionPrice, priceImpact, fee }
+            = Liquidity.computeAmountOut({ poolKeys, poolInfo, amountIn, currencyOut, slippage, })
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
                 poolKeys.programId,         // liquidityProgramId
@@ -632,7 +651,7 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
+        const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NativeMint);
         const transferAmount = convertToLamports(amount);
 
         let txn = new Transaction()

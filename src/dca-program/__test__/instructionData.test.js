@@ -42,15 +42,17 @@ describe("instruction data test", () => {
 
 
     test("swap to sol data buffer should match", () => {
-        const expected = Buffer.from([3]);
-        const actual = new SwapToSolData().encode();
+        const amount = new BN("1000000000");
+        const expected = Buffer.from([3, 0, 202, 154, 59, 0, 0, 0, 0]);
+        const actual = new SwapToSolData(amount).encode();
         expect(actual).toEqual(expected);
     });
 
 
     test("swap from sol data buffer should match", () => {
-        const expected = Buffer.from([4]);
-        const actual = new SwapFromSolData().encode();
+        const amount = new BN("1000000000");
+        const expected = Buffer.from([4, 0, 202, 154, 59, 0, 0, 0, 0]);
+        const actual = new SwapFromSolData(amount).encode();
         expect(actual).toEqual(expected);
     });
 

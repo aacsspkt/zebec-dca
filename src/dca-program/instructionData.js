@@ -65,8 +65,9 @@ export class InitializeData {
  * Data for "InstructionTypes.ProcessSwapToSol"
  */
 export class SwapToSolData {
-    constructor() {
+    constructor(minimumAmountOut) {
         this.instruction = 3;
+        this.minimumAmountOut = minimumAmountOut;
     }
 
     /**
@@ -82,8 +83,9 @@ export class SwapToSolData {
  * Data for "IntructionTypes.ProcessSwapFromSol"
  */
 export class SwapFromSolData {
-    constructor() {
+    constructor(minimumAmountOut) {
         this.instruction = 4;
+        this.minimumAmountOut = minimumAmountOut;
     }
 
     /**
@@ -219,7 +221,8 @@ export const swapToSolSchema = new Map([
         {
             kind: "struct",
             fields: [
-                ["instruction", "u8"]
+                ["instruction", "u8"],
+                ["minimumAmountOut", "u64"],
             ]
         }
     ]
@@ -232,7 +235,8 @@ export const swapFromSolSchema = new Map([
         {
             kind: "struct",
             fields: [
-                ["instruction", "u8"]
+                ["instruction", "u8"],
+                ["minimumAmountOut", "u64"],
             ]
         }
     ]

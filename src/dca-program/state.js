@@ -1,5 +1,6 @@
-import { PublicKey } from "@solana/web3.js";
-import { deserialize, deserializeUnchecked } from "borsh";
+import { Connection, PublicKey, Commitment } from "@solana/web3.js";
+import { deserializeUnchecked } from "borsh";
+import { DcaProgramId } from "./constants";
 
 export class DcaAccount {
     constructor({
@@ -27,10 +28,28 @@ export class DcaAccount {
     /**
      * Decode buffer data to DcaAccount Object
      * @param { Buffer } data 
-     * @returns 
+     * @returns {DcaAccount
      */
     static decodeUnchecked(data) {
         return deserializeUnchecked(dcaAccountSchema, DcaAccount, data);
+    }
+
+    /**
+     * 
+     * @param {Connection} connection 
+     * @param {PublicKey} address 
+     * @param {Commitment} commitment 
+     * @param {PublicKey} programId 
+     * @returns 
+     */
+    static async getDcaAccountInfo(connection, address, commitment, programId = DcaProgramId) {
+        const info = await connection.getAccountInfo(address, commitment);
+        if (!info) throw new Error("Dca Account not found.");
+        if (!info.owner.equals(programId)) throw new Error("Account is not owned by Dca Program.");
+
+        const dcaAcount = this.decodeUnchecked(info.data);
+
+        return dcaAcount;
     }
 }
 

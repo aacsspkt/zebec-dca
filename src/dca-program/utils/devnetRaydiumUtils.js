@@ -180,7 +180,7 @@ export async function fetchAllPoolKeysDevnet(
 
         const { data } = accountInfo;
 
-        const fields = LIQUIDITY_STATE_LAYOUT.decode(data);
+        const fields = LIQUIDITY_STATE_LAYOUT.decode(Uint8Array.from(data));
         const { status, nonce, baseMint, quoteMint, lpMint, openOrders, targetOrders, baseVault, quoteVault, marketId } =
             fields;
 
@@ -293,7 +293,7 @@ export async function fetchPoolKeysDevnet(
     const { state: LiquidityStateLayout } = Liquidity.getLayouts(version)
 
     //@ts-ignore
-    const fields = LiquidityStateLayout.decode(account.data);
+    const fields = LiquidityStateLayout.decode(Uint8Array.from(account.data));
     const { status, baseMint, quoteMint, lpMint, openOrders, targetOrders, baseVault, quoteVault, marketId } = fields;
 
     let withdrawQueue;
@@ -343,7 +343,7 @@ export async function fetchPoolKeysDevnet(
     const marketInfo = await connection.getAccountInfo(marketId);
     const { state: MARKET_STATE_LAYOUT } = Market.getLayouts(marketVersion);
     //@ts-ignore
-    const market = MARKET_STATE_LAYOUT.decode(marketInfo.data);
+    const market = MARKET_STATE_LAYOUT.decode(Uint8Array.from(marketInfo.data));
 
     const {
         baseVault: marketBaseVault,

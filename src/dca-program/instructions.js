@@ -184,6 +184,7 @@ export class DcaInstruction {
                 throw new TypeError("Invalid argument type.")
             }
 
+            console.log(dcaTime.toString());
             const data = new InitializeData(
                 startTime,
                 dcaAmount,
@@ -394,7 +395,8 @@ export class DcaInstruction {
                 !(vaultNativeMintAddress instanceof PublicKey) &&
                 !(vaultTokenAddress instanceof PublicKey) &&
                 !(dcaDataAddress instanceof PublicKey) &&
-                !isBN(transferAmount)) {
+                !isBN(transferAmount)
+            ) {
                 throw new TypeError("Invalid argument type.")
             }
 
@@ -500,32 +502,6 @@ export class DcaInstruction {
         ) {
             throw new TypeError("Invalid argument type.")
         }
-
-        console.log("liquidityProgramId: ", liquidityProgramId.toString())
-        console.log("ammAddress ", ammAddress.toString())
-        console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
-        console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
-        console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
-        console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
-        console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
-
-        console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
-        console.log("serumMarketAddress: ", serumMarketAddress.toString())
-        console.log("serumBidsAddress: ", serumBidsAddress.toString())
-        console.log("serumAskAddress: ", serumAskAddress.toString())
-        console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
-        console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
-        console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
-        console.log("serumVaultSigner: ", serumVaultSigner.toString())
-
-        console.log("vaultAddress: ", vaultAddress.toString())
-        console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
-        console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
-        console.log("mintAddress: ", mintAddress.toString())
-        console.log("ownerAddress: ", ownerAddress.toString())
-        console.log("dcaDataAddress: ", dcaDataAddress.toString())
-        console.log("nativeMintAddress: ", nativeMintAddress.toString())
-        console.log("TokenProgramId: ", TokenProgramId.toString())
 
         const data = new SwapFromSolData(minimumAmountOut).encode();
 
@@ -645,6 +621,32 @@ export class DcaInstruction {
         ) {
             throw new TypeError("Invalid argument type.")
         }
+
+        // console.log("liquidityProgramId: ", liquidityProgramId.toString())
+        // console.log("ammAddress ", ammAddress.toString())
+        // console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
+        // console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
+        // console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
+        // console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
+        // console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
+
+        // console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
+        // console.log("serumMarketAddress: ", serumMarketAddress.toString())
+        // console.log("serumBidsAddress: ", serumBidsAddress.toString())
+        // console.log("serumAskAddress: ", serumAskAddress.toString())
+        // console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
+        // console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
+        // console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
+        // console.log("serumVaultSigner: ", serumVaultSigner.toString())
+
+        // console.log("vaultAddress: ", vaultAddress.toString())
+        // console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
+        // console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
+        // console.log("mintAddress: ", mintAddress.toString())
+        // console.log("ownerAddress: ", ownerAddress.toString())
+        // console.log("dcaDataAddress: ", dcaDataAddress.toString())
+        // console.log("nativeMintAddress: ", nativeMintAddress.toString())
+        // console.log("TokenProgramId: ", TokenProgramId.toString())
 
         const data = new SwapToSolData(minimumAmountOut).encode();
 

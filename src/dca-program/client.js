@@ -5,7 +5,6 @@ import { DcaInstruction } from "./instructions";
 import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys, fetchAllPoolKeys, fetchPoolKeysDevnet, getMintInfo } from "./utils";
 import { Liquidity, Percent, Token, TokenAmount } from "@raydium-io/raydium-sdk";
 import { DcaAccount } from "./state";
-import BigNumber from "bignumber.js";
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -143,7 +142,6 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
                 _dcaTime,
                 minimumAmountOut
             ));
-
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
         const signedTxn = await window.solana.signTransaction(txn);
@@ -399,21 +397,24 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             connection,
             new PublicKey(POOL_ID)
         );
-
         const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
+
         const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
+        const amount = new BN(dcaInfo.dcaAmount).div(new BN(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
+
         const amountIn = new TokenAmount(
             new Token(
                 poolKeys.baseMint,
                 poolInfo.baseDecimals
             ),
-            new BN(dcaInfo.dcaAmount).toString(),
+            amount.toString(),
             false
         )
         const currencyOut = new Token(poolKeys.quoteMint, poolInfo.quoteDecimals);
         const slippage = new Percent(5, 100);
         const { amountOut, minAmountOut, currentPrice, executionPrice, priceImpact, fee }
-            = Liquidity.computeAmountOut({ poolKeys, poolInfo, amountIn, currencyOut, slippage, })
+            = Liquidity.computeAmountOut({ poolKeys, poolInfo, amountIn, currencyOut, slippage, });
+
         let txn = new Transaction()
             .add(DcaInstruction.swapFromSol(
                 poolKeys.programId,         // liquidityProgramId
@@ -438,13 +439,11 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
                 ownerAddress,
                 dcaDataAddress,
                 NativeMint,
-                minAmountOut
+                minAmountOut.raw
             ));
         txn.feePayer = ownerAddress;
         txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         const signedTxn = await window.solana.signTransaction(txn);
-        console.log(signedTxn);
 
         const signature = await sendAndConfirmRawTransaction(
             connection,

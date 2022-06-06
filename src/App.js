@@ -14,9 +14,10 @@ import {
   swapFromSol,
   swapToSol,
   DcaAccount,
-  getMintInfo,
   findDcaDerivedAddress,
   findAssociatedTokenAddress,
+  fetchAllPoolKeysDevnet,
+  NativeMint,
 } from "./dca-program";
 
 
@@ -25,7 +26,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const amount = 1;
+      const amount = 2;
 
       const { status, data } = await depositToken(
         connection,
@@ -69,16 +70,18 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
       const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 0.5 min
       const dcaAmount = 1;
-      const dcaTime = 3 * 60  // 3 min
+      const dcaTime = 30 * 60  // 30 min
 
       const minimumAmountOut = 1.5;
 
       const { status, data } = await initialize(
         connection,
         owner,
+        mint,
         dcaData,
         startTime,
         dcaAmount,
@@ -91,6 +94,7 @@ function App() {
 
     } catch (e) {
       console.log(e);
+      console.log(e.logs)
     }
   }
 
@@ -124,8 +128,8 @@ function App() {
   const onWithdrawSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "46uSokKg1KWFrEC9HMp1BjrhtiA4BMuMybHBiaeyPPuJ";
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
+      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const transferAmount = 0.5;
 
       const { status, data } = await withdrawSol(
@@ -147,8 +151,8 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "Ay75t7vwzVbM7DazTHrEWdxfmCzUHbmxNApzxR8pSVbE";
-      const mint = "6XSp58Mz6LAi91XKenjQfj9D1MxPEGYtgBkggzYvE8jY";
+      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
+      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
       const transferAmount = 0.5;
 
       const { status, data } = await fundToken(
@@ -212,7 +216,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "BVjnBmnrQPuZ6oxSZuCjsHEPj9GFnv9gZGEjn1LVLvaM";
+      const dcaData = "8vdASJ8vPqoWXGyect6J9exkUYWBFJzpLnygNWq2wYgx";
       const { status, data } = await swapToSol(
         connection,
         owner,
@@ -230,7 +234,7 @@ function App() {
     try {
       const owner = window.solana.publicKey;
       const mint = new PublicKey("8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN");
-      const dcaDataAddress = new PublicKey("3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu");
+      const dcaDataAddress = new PublicKey("8vdASJ8vPqoWXGyect6J9exkUYWBFJzpLnygNWq2wYgx");
       const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaDataAddress.toBuffer()]);
       const [vaultAToken,] = await findAssociatedTokenAddress(vault, mint);
       const response = await connection.getTokenAccountBalance(vaultAToken, "finalized");
@@ -242,33 +246,48 @@ function App() {
 
   const onDcaDataClick = async () => {
     try {
-      const dcaDataAddress = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
+      const dcaDataAddress = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
       let dcaAccount = await connection.getAccountInfo(new PublicKey(dcaDataAddress), "confirmed");
       let dcaData = DcaAccount.decodeUnchecked(dcaAccount.data)
       console.log("Dca Account Data",
         `total amount: ${dcaData.totalAmount.toString()},
+        sender: ${new PublicKey(dcaData.senderAccount).toString()},
+        mint: ${new PublicKey(dcaData.mintAddress).toString()},
+        start time: ${new Date(dcaData.startTime * 1000).toLocaleString()},
         dca amount: ${dcaData.dcaAmount.toString()},
         dca time: ${dcaData.dcaTime.toString()},
-        start time: ${dcaData.startTime.toString()},
-        minimumAmountOut: ${dcaData.minimumAmountOut.toString()},
-        is initialized: ${dcaData.state.toString()}`
+        flag: ${dcaData.flag.toString()},
+        state: ${dcaData.state.toString()},
+        minimumAmountOut: ${dcaData.minimumAmountOut.toString()}`,
       );
     } catch (e) {
       console.log("error: ", e);
     }
   }
 
-  const onGetMintInfoClick = async () => {
+  (async () => {
     try {
-      const address = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const mintInfo = await getMintInfo(connection, new PublicKey(address));
-      console.log(mintInfo);
+      const list = await fetchAllPoolKeysDevnet(connection);
+      const filtered = list.filter(keys => keys.quoteMint == NativeMint.toString());
+      let keysList = [];
+      console.log(filtered.map(keys => {
+        return {
+          id: keys.id.toString(),
+          authority: keys.authority.toString(),
+          baseMint: keys.baseMint.toString(),
+          baseVault: keys.baseVault.toString(),
+          quoteMint: keys.quoteMint.toString(),
+          quoteVault: keys.quoteVault.toString(),
+          lpMint: keys.lpMint.toString(),
+          lpVault: keys.lpVault.toString(),
+          marketId: keys.marketId.toString(),
+        }
+      }
+      ));
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  }
-
-  console.log()
+  })()
 
   return (
     <div className="App">
@@ -283,7 +302,6 @@ function App() {
       <button className='btn' onClick={onSwapFromSolClick}>Swap From Sol</button>
       <button className='btn' onClick={onSwapToSolClick}>Swap To Sol</button>
       <button className='btn' onClick={onDcaDataClick}>Get Dca Account Data</button>
-      <button className='btn' onClick={onGetMintInfoClick}>Get Mint Info Data</button>
       <button className='btn' onClick={onGetWithdrawableTokenBalanceClicked}>Get Token Balance</button>
     </div>
   );

@@ -20,8 +20,8 @@ export class DcaAccount {
         this.startTime = startTime;
         this.dcaAmount = dcaAmount;
         this.dcaTime = dcaTime;
-        this.flag = state;
         this.state = flag;
+        this.flag = state;
         this.minimumAmountOut = minimumAmountOut;
     }
 
@@ -53,7 +53,6 @@ export class DcaAccount {
     }
 }
 
-
 export const dcaAccountSchema = new Map([
     [
         DcaAccount,
@@ -61,15 +60,17 @@ export const dcaAccountSchema = new Map([
             kind: "struct",
             fields: [
                 ["totalAmount", "u64"],
-                ["senderAccount", ["u8", 32]],
-                ["mintAddress", ["u8", 32]],
+                ["senderAccount", [32]],
+                ["mintAddress", [32]],
                 ["startTime", "u64"],
                 ["dcaAmount", "u64"],
                 ["dcaTime", "u64"],
-                ["flag", "u8"],
                 ["state", "u8"],
+                ["flag", "u8"],
                 ["minimumAmountOut", "u64"],
             ]
         }
     ]
 ]);
+
+

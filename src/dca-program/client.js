@@ -93,14 +93,15 @@ export async function depositToken(connection, owner, mint, amount) {
  * @param {number} dcaTime The timespan of dca
  * @param {number} minimumAmountOut // todo
  */
-export async function initialize(connection, owner, dcaData, startTime, dcaAmount, dcaTime) {
+export async function initialize(connection, owner, mint, dcaData, startTime, dcaAmount, dcaTime) {
     try {
-        if (!connection && !owner && !dcaData && !startTime && !dcaAmount && dcaTime) {
+        if (!connection && !owner && !mint && !dcaData && !startTime && !dcaAmount && dcaTime) {
             throw new ReferenceError("Missing arguments.");
         }
 
         if (!(connection instanceof Connection) &&
             typeof owner != "string" &&
+            typeof mint != "string" &&
             typeof dcaData != "string" &&
             typeof startTime != "number" &&
             typeof dcaAmount != "number" &&
@@ -111,26 +112,15 @@ export async function initialize(connection, owner, dcaData, startTime, dcaAmoun
 
 
         const ownerAddress = new PublicKey(owner);
+        const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()])
         const _startTime = new BN(startTime);
         const _dcaTime = new BN(dcaTime);
-
-        const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ"; // use fetchAllPools later in mainnet
-        const poolKeys = await fetchPoolKeysDevnet(
-            connection,
-            new PublicKey(POOL_ID)
-        );
-        const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
-        const amountIn = new TokenAmount(new Token(poolKeys.baseMint, poolInfo.baseDecimals), dcaAmount, false)
-        const currencyOut = new Token(poolKeys.quoteMint, poolInfo.quoteDecimals);
-
-        const slippage = new Percent(5, 100);
-        const { amountOut, minAmountOut, currentPrice, executionPrice, priceImpact, fee }
-            = Liquidity.computeAmountOut({ poolKeys, poolInfo, amountIn, currencyOut, slippage, })
-
-        const _dcaAmount = new BN(amountIn.raw);
-        const minimumAmountOut = new BN(minAmountOut.raw);
+        const mintInfo = await getMintInfo(connection, mintAddress);
+        console.log(mintInfo);
+        const _dcaAmount = convertToLamports(dcaAmount, mintInfo.decimals);
+        const minimumAmountOut = convertToLamports(dcaAmount, mintInfo.decimals);
 
         let txn = new Transaction()
             .add(DcaInstruction.initialize(
@@ -255,7 +245,6 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const mintInfo = await getMintInfo(connection, mintAddress);
-        console.log(mintInfo.decimals);
         const transferAmount = convertToLamports(amount, mintInfo.decimals);
 
         let txn = new Transaction()
@@ -497,38 +486,40 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     // if (!keys) throw new Error("No liquidity pool found.")
 
     // FIDA_SOL
-    const POOL_ID = new PublicKey("ER3u3p9TGyA4Sc9VCJrkLq4hR73GFW8QAzYkkz8rSwsk");
+    const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
 
-    const poolKeys = await fetchPoolKeys(
+    const poolKeys = await fetchPoolKeysDevnet(
         connection,
-        POOL_ID
+        new PublicKey(POOL_ID)
     );
+    const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
 
-    console.log(`
-            poolKeys: ,
-            "id": ${poolKeys.id},
-            "authority": ${poolKeys.authority},
-            "openOrders": ${poolKeys.openOrders},
-            "targetOrders": ${poolKeys.targetOrders},
-            "baseVault": ${poolKeys.baseVault},
-            "quoteVault": ${poolKeys.quoteVault},
-            "marketId": ${poolKeys.marketId},
-            "marketBids": ${poolKeys.marketBids},
-            "marketAsks": ${poolKeys.marketAsks},
-            "marketEventQueue": ${poolKeys.marketEventQueue},
-            "marketBaseVault": ${poolKeys.marketBaseVault},
-            "marketQuoteVault": ${poolKeys.marketQuoteVault},
-            "marketAuthority": ${poolKeys.marketAuthority},`
-    );
+    const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
+    const amount = new BN(dcaInfo.dcaAmount).div(new BN(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
+
+    const amountIn = new TokenAmount(
+        new Token(
+            poolKeys.baseMint,
+            poolInfo.baseDecimals
+        ),
+        amount.toString(),
+        false
+    )
+    const currencyOut = new Token(poolKeys.quoteMint, poolInfo.quoteDecimals);
+    const slippage = new Percent(5, 100);
+    const { amountOut, minAmountOut, currentPrice, executionPrice, priceImpact, fee }
+        = Liquidity.computeAmountOut({ poolKeys, poolInfo, amountIn, currencyOut, slippage, });
 
     let txn = new Transaction()
         .add(DcaInstruction.swapToSol(
+            poolKeys.programId,
             poolKeys.id,                // ammAddress
             poolKeys.authority,         // ammAuthorityAddress
             poolKeys.openOrders,        // ammOpenOrderAddress
             poolKeys.targetOrders,      // ammTargetOrderAddress
             poolKeys.baseVault,         // poolCoinTokenAddress
             poolKeys.quoteVault,        // poolPcTokenAddress
+            poolKeys.marketProgramId,   // serumMarketProgramId
             poolKeys.marketId,          // serumMarketAddress
             poolKeys.marketBids,        // serumBidsAddress
             poolKeys.marketAsks,        // serumAskAddress
@@ -536,13 +527,14 @@ export async function swapToSol(connection, owner, mint, dcaData) {
             poolKeys.marketBaseVault,   // serumCoinVaultAddress
             poolKeys.marketQuoteVault,  // serumVaultAddress
             poolKeys.marketAuthority,   // serumVaultSigner
-            vaultTokenAddress,
             vaultAddress,
             vaultNativeMintAddress,
+            vaultTokenAddress,
             mintAddress,
             ownerAddress,
             dcaDataAddress,
             NativeMint,
+            minAmountOut.raw
         ));
     txn.feePayer = ownerAddress;
     txn.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
@@ -557,7 +549,7 @@ export async function swapToSol(connection, owner, mint, dcaData) {
         status: "success",
         data: {
             signature: signature,
-        }
+        },
     }
 }
 
@@ -590,7 +582,8 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
-        const transferAmount = convertToLamports(amount);
+        const mintInfo = await getMintInfo(connection, mintAddress);
+        const transferAmount = convertToLamports(amount, mintInfo.decimals);
 
         let txn = new Transaction()
             .add(DcaInstruction.fundToken(

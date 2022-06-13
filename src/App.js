@@ -16,16 +16,14 @@ import {
   DcaAccount,
   findDcaDerivedAddress,
   findAssociatedTokenAddress,
-  fetchAllPoolKeysDevnet,
   NativeMint,
 } from "./dca-program";
-
 
 function App() {
   const onDepositTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
       const amount = 2;
 
       const { status, data } = await depositToken(
@@ -70,8 +68,8 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
+      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
+      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
       const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 0.5 min
       const dcaAmount = 1;
       const dcaTime = 30 * 60  // 30 min
@@ -128,8 +126,8 @@ function App() {
   const onWithdrawSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
+      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
       const transferAmount = 0.5;
 
       const { status, data } = await withdrawSol(
@@ -141,18 +139,18 @@ function App() {
       );
 
       console.log(status);
-      console.log(data.signature);
+      console.log(data);
 
     } catch (e) {
-      console.log(e);
+      console.log(e.logs ? e.logs : e);
     }
   }
 
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
+      const dcaData = "DuVkw9348Xfv4UfQqYHTMGGiMozUsTCWia3f4s16AKTR";
       const transferAmount = 0.5;
 
       const { status, data } = await fundToken(
@@ -185,10 +183,8 @@ function App() {
         dcaData,
         transferAmount
       );
-
       console.log(status);
       console.log(data.signature);
-
     } catch (e) {
       console.log(e, e.logs);
     }
@@ -215,8 +211,8 @@ function App() {
   const onSwapToSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "8vdASJ8vPqoWXGyect6J9exkUYWBFJzpLnygNWq2wYgx";
+      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
+      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
       const { status, data } = await swapToSol(
         connection,
         owner,
@@ -226,19 +222,22 @@ function App() {
       console.log(status);
       console.log(data.signature);
     } catch (e) {
-      console.log(e);
+      console.log(e.logs ? e.logs : e);
     }
   }
 
   const onGetWithdrawableTokenBalanceClicked = async () => {
     try {
       const owner = window.solana.publicKey;
-      const mint = new PublicKey("8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN");
-      const dcaDataAddress = new PublicKey("8vdASJ8vPqoWXGyect6J9exkUYWBFJzpLnygNWq2wYgx");
+      const mint = new PublicKey("BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a");
+      const dcaDataAddress = new PublicKey("Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D");
       const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaDataAddress.toBuffer()]);
       const [vaultAToken,] = await findAssociatedTokenAddress(vault, mint);
-      const response = await connection.getTokenAccountBalance(vaultAToken, "finalized");
-      console.log(`Withdrawable Balance of ${vaultAToken.toString()}: ${response.value.amount}`);
+      const [nmVaultAToken,] = await findAssociatedTokenAddress(vault, NativeMint);
+      const response0 = await connection.getTokenAccountBalance(vaultAToken, "finalized");
+      const response1 = await connection.getTokenAccountBalance(nmVaultAToken, "finalized");
+      console.log(`Non native mint balance of ${vault}: ${response0.value.amount}`);
+      console.log(`Native mint balance balance of ${vault}: ${response1.value.amount}`);
     } catch (e) {
       console.log(e);
     }
@@ -246,7 +245,7 @@ function App() {
 
   const onDcaDataClick = async () => {
     try {
-      const dcaDataAddress = "7we9mVn4xzyo5dVDkkkrNwxHdaDpXPvMb3DJ8hmwsiWN";
+      const dcaDataAddress = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
       let dcaAccount = await connection.getAccountInfo(new PublicKey(dcaDataAddress), "confirmed");
       let dcaData = DcaAccount.decodeUnchecked(dcaAccount.data)
       console.log("Dca Account Data",
@@ -265,32 +264,21 @@ function App() {
     }
   }
 
-  (async () => {
-    try {
-      const list = await fetchAllPoolKeysDevnet(connection);
-      const filtered = list.filter(keys => keys.quoteMint == NativeMint.toString());
-      let keysList = [];
-      console.log(filtered.map(keys => {
-        return {
-          id: keys.id.toString(),
-          authority: keys.authority.toString(),
-          baseMint: keys.baseMint.toString(),
-          baseVault: keys.baseVault.toString(),
-          quoteMint: keys.quoteMint.toString(),
-          quoteVault: keys.quoteVault.toString(),
-          lpMint: keys.lpMint.toString(),
-          lpVault: keys.lpVault.toString(),
-          marketId: keys.marketId.toString(),
-        }
-      }
-      ));
-    } catch (e) {
-      console.log(e)
-    }
-  })()
-
   return (
     <div className="App">
+      {/* <Icon mint={"zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF"} />
+      <Icon mint={"666YXKdQzN49gzQetYffQUhy4hLxEB31PZkRew4VrXAj"} />
+      <Icon mint={"G9tt98aYSznRk7jWsfuz9FnTdokxS6Brohdo9hSmjTRB"} />
+      <Icon mint={"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"} />
+      <Icon mint={"Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"} />
+      <Icon mint={"7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT"} />
+      <Icon mint={"7ScYHk4VDgSRnQngAUtQk4Eyf7fGat8P4wXq6e2dkzLj"} />
+      <Icon mint={"FMJotGUW16AzexRD3vXJQ94AL71cwrhtFaCTGtK1QHXm"} />
+      <Icon mint={"SCYfrGCw8aDiqdgcpdGjV6jp4UVVQLuphxTDLNWu36f"} />
+      <Icon mint={"4CHXd5uSMb9qrLfQwvyHzDMiKmNKDP8Np23dAQWTKNEy"} />
+      <Icon mint={"H5cDniBsyfoddtHrfz6gCSw7R23ZwRuzozD4Fek9WUsS"} />
+      <Icon mint={"So11111111111111111111111111111111111111112"} />
+      <br></br> */}
       <button className='btn' onClick={getProvider}>Connect</button>
       <button className='btn' onClick={onDepositTokenClick}>Deposit Token</button>
       <button className='btn' onClick={onDepositSolClick}>Deposit Sol</button>

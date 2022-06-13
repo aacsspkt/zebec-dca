@@ -58,14 +58,14 @@ export class DcaInstruction {
         amount
     ) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(nativeMintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(vaultNativeMintAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(nativeMintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(vaultNativeMintAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
                 !(amount instanceof BN)) {
                 throw new TypeError("Invalid argument type.")
             }
@@ -120,14 +120,14 @@ export class DcaInstruction {
         amount
     ) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(nativeMintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultNativeMintAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(nativeMintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultNativeMintAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
                 !(amount instanceof BN)
             ) {
                 throw new TypeError("Invalid argument type.")
@@ -173,18 +173,17 @@ export class DcaInstruction {
      */
     static initialize(ownerAddress, vaultAddress, dcaDataAddress, startTime, dcaAmount, dcaTime, minimumAmountOut) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
-                !isBN(startTime) &&
-                !isBN(dcaAmount) &&
-                !isBN(dcaTime) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
+                !isBN(startTime) ||
+                !isBN(dcaAmount) ||
+                !isBN(dcaTime) ||
                 !isBN(minimumAmountOut)
             ) {
                 throw new TypeError("Invalid argument type.")
             }
 
-            console.log(dcaTime.toString());
             const data = new InitializeData(
                 startTime,
                 dcaAmount,
@@ -218,12 +217,12 @@ export class DcaInstruction {
      */
     static withdrawToken(ownerAddress, vaultAddress, mintAddress, ownerTokenAddress, vaultTokenAddress, dcaDataAddress, transferAmount) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
                 !isBN(transferAmount)) {
                 throw new TypeError("Invalid argument type.")
             }
@@ -277,15 +276,15 @@ export class DcaInstruction {
         transferAmount
     ) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
-                !(nativeMintAddress instanceof PublicKey) &&
-                !(vaultNativeMintAddress instanceof PublicKey) &&
-                !(ownerNativeMintAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
+                !(nativeMintAddress instanceof PublicKey) ||
+                !(vaultNativeMintAddress instanceof PublicKey) ||
+                !(ownerNativeMintAddress instanceof PublicKey) ||
                 !isBN(transferAmount)
             ) {
                 throw new TypeError("Invalid argument type.")
@@ -304,9 +303,9 @@ export class DcaInstruction {
                     AccountMetaBuilder.writable(ownerTokenAddress, false),
                     AccountMetaBuilder.writable(vaultTokenAddress, false),
                     AccountMetaBuilder.readonly(AssociatedTokenProgramId, false),
-                    AccountMetaBuilder.writable(dcaDataAddress, true),
-                    AccountMetaBuilder.writable(nativeMintAddress, true),
-                    AccountMetaBuilder.writable(vaultNativeMintAddress, true),
+                    AccountMetaBuilder.writable(dcaDataAddress, false),
+                    AccountMetaBuilder.writable(nativeMintAddress, false),
+                    AccountMetaBuilder.writable(vaultNativeMintAddress, false),
                     AccountMetaBuilder.writable(ownerNativeMintAddress, false),
                 ],
                 programId: DcaProgramId,
@@ -330,12 +329,12 @@ export class DcaInstruction {
      */
     static fundToken(ownerAddress, vaultAddress, mintAddress, ownerTokenAddress, vaultTokenAddress, dcaDataAddress, transferAmount) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
                 !isBN(transferAmount)) {
                 throw new TypeError("Invalid argument type.")
             }
@@ -387,14 +386,14 @@ export class DcaInstruction {
         transferAmount
     ) {
         try {
-            if (!(ownerAddress instanceof PublicKey) &&
-                !(vaultAddress instanceof PublicKey) &&
-                !(mintAddress instanceof PublicKey) &&
-                !(nativeMintAddress instanceof PublicKey) &&
-                !(ownerTokenAddress instanceof PublicKey) &&
-                !(vaultNativeMintAddress instanceof PublicKey) &&
-                !(vaultTokenAddress instanceof PublicKey) &&
-                !(dcaDataAddress instanceof PublicKey) &&
+            if (!(ownerAddress instanceof PublicKey) ||
+                !(vaultAddress instanceof PublicKey) ||
+                !(mintAddress instanceof PublicKey) ||
+                !(nativeMintAddress instanceof PublicKey) ||
+                !(ownerTokenAddress instanceof PublicKey) ||
+                !(vaultNativeMintAddress instanceof PublicKey) ||
+                !(vaultTokenAddress instanceof PublicKey) ||
+                !(dcaDataAddress instanceof PublicKey) ||
                 !isBN(transferAmount)
             ) {
                 throw new TypeError("Invalid argument type.")
@@ -476,28 +475,28 @@ export class DcaInstruction {
         minimumAmountOut
     ) {
         if (
-            !(liquidityProgramId instanceof PublicKey) &&
-            !(ammAddress instanceof PublicKey) &&
-            !(ammAuthorityAddress instanceof PublicKey) &&
-            !(ammOpenOrderAddress instanceof PublicKey) &&
-            !(ammTargetOrderAddress instanceof PublicKey) &&
-            !(poolCoinTokenAddress instanceof PublicKey) &&
-            !(poolPcTokenAddress instanceof PublicKey) &&
-            !(serumMarketProgramId instanceof PublicKey) &&
-            !(serumMarketAddress instanceof PublicKey) &&
-            !(serumBidsAddress instanceof PublicKey) &&
-            !(serumAskAddress instanceof PublicKey) &&
-            !(serumEventQueueAddress instanceof PublicKey) &&
-            !(serumCoinVaultAddress instanceof PublicKey) &&
-            !(serumPcVaultAddress instanceof PublicKey) &&
-            !(serumVaultSigner instanceof PublicKey) &&
-            !(vaultAddress instanceof PublicKey) &&
-            !(vaultNativeMintAddress instanceof PublicKey) &&
-            !(vaultTokenAddress instanceof PublicKey) &&
-            !(mintAddress instanceof PublicKey) &&
-            !(ownerAddress instanceof PublicKey) &&
-            !(dcaDataAddress instanceof PublicKey) &&
-            !(nativeMintAddress instanceof PublicKey) &&
+            !(liquidityProgramId instanceof PublicKey) ||
+            !(ammAddress instanceof PublicKey) ||
+            !(ammAuthorityAddress instanceof PublicKey) ||
+            !(ammOpenOrderAddress instanceof PublicKey) ||
+            !(ammTargetOrderAddress instanceof PublicKey) ||
+            !(poolCoinTokenAddress instanceof PublicKey) ||
+            !(poolPcTokenAddress instanceof PublicKey) ||
+            !(serumMarketProgramId instanceof PublicKey) ||
+            !(serumMarketAddress instanceof PublicKey) ||
+            !(serumBidsAddress instanceof PublicKey) ||
+            !(serumAskAddress instanceof PublicKey) ||
+            !(serumEventQueueAddress instanceof PublicKey) ||
+            !(serumCoinVaultAddress instanceof PublicKey) ||
+            !(serumPcVaultAddress instanceof PublicKey) ||
+            !(serumVaultSigner instanceof PublicKey) ||
+            !(vaultAddress instanceof PublicKey) ||
+            !(vaultNativeMintAddress instanceof PublicKey) ||
+            !(vaultTokenAddress instanceof PublicKey) ||
+            !(mintAddress instanceof PublicKey) ||
+            !(ownerAddress instanceof PublicKey) ||
+            !(dcaDataAddress instanceof PublicKey) ||
+            !(nativeMintAddress instanceof PublicKey) ||
             !isBN(minimumAmountOut)
         ) {
             throw new TypeError("Invalid argument type.")
@@ -595,58 +594,32 @@ export class DcaInstruction {
         minimumAmountOut
     ) {
         if (
-            !(liquidityProgramId instanceof PublicKey) &&
-            !(ammAddress instanceof PublicKey) &&
-            !(ammAuthorityAddress instanceof PublicKey) &&
-            !(ammOpenOrderAddress instanceof PublicKey) &&
-            !(ammTargetOrderAddress instanceof PublicKey) &&
-            !(poolCoinTokenAddress instanceof PublicKey) &&
-            !(poolPcTokenAddress instanceof PublicKey) &&
-            !(serumMarketProgramId instanceof PublicKey) &&
-            !(serumMarketAddress instanceof PublicKey) &&
-            !(serumBidsAddress instanceof PublicKey) &&
-            !(serumAskAddress instanceof PublicKey) &&
-            !(serumEventQueueAddress instanceof PublicKey) &&
-            !(serumCoinVaultAddress instanceof PublicKey) &&
-            !(serumPcVaultAddress instanceof PublicKey) &&
-            !(serumVaultSigner instanceof PublicKey) &&
-            !(vaultAddress instanceof PublicKey) &&
-            !(vaultNativeMintAddress instanceof PublicKey) &&
-            !(vaultTokenAddress instanceof PublicKey) &&
-            !(mintAddress instanceof PublicKey) &&
-            !(ownerAddress instanceof PublicKey) &&
-            !(dcaDataAddress instanceof PublicKey) &&
-            !(nativeMintAddress instanceof PublicKey) &&
+            !(liquidityProgramId instanceof PublicKey) ||
+            !(ammAddress instanceof PublicKey) ||
+            !(ammAuthorityAddress instanceof PublicKey) ||
+            !(ammOpenOrderAddress instanceof PublicKey) ||
+            !(ammTargetOrderAddress instanceof PublicKey) ||
+            !(poolCoinTokenAddress instanceof PublicKey) ||
+            !(poolPcTokenAddress instanceof PublicKey) ||
+            !(serumMarketProgramId instanceof PublicKey) ||
+            !(serumMarketAddress instanceof PublicKey) ||
+            !(serumBidsAddress instanceof PublicKey) ||
+            !(serumAskAddress instanceof PublicKey) ||
+            !(serumEventQueueAddress instanceof PublicKey) ||
+            !(serumCoinVaultAddress instanceof PublicKey) ||
+            !(serumPcVaultAddress instanceof PublicKey) ||
+            !(serumVaultSigner instanceof PublicKey) ||
+            !(vaultAddress instanceof PublicKey) ||
+            !(vaultNativeMintAddress instanceof PublicKey) ||
+            !(vaultTokenAddress instanceof PublicKey) ||
+            !(mintAddress instanceof PublicKey) ||
+            !(ownerAddress instanceof PublicKey) ||
+            !(dcaDataAddress instanceof PublicKey) ||
+            !(nativeMintAddress instanceof PublicKey) ||
             !isBN(minimumAmountOut)
         ) {
             throw new TypeError("Invalid argument type.")
         }
-
-        // console.log("liquidityProgramId: ", liquidityProgramId.toString())
-        // console.log("ammAddress ", ammAddress.toString())
-        // console.log("ammAuthorityAddress: ", ammAuthorityAddress.toString())
-        // console.log("ammOpenOrderAddress: ", ammOpenOrderAddress.toString())
-        // console.log("ammTargetOrderAddress: ", ammTargetOrderAddress.toString())
-        // console.log("poolCoinTokenAddress: ", poolCoinTokenAddress.toString())
-        // console.log("poolPcTokenAddress: ", poolPcTokenAddress.toString())
-
-        // console.log("serumMarketProgramId: ", serumMarketProgramId.toString())
-        // console.log("serumMarketAddress: ", serumMarketAddress.toString())
-        // console.log("serumBidsAddress: ", serumBidsAddress.toString())
-        // console.log("serumAskAddress: ", serumAskAddress.toString())
-        // console.log("serumEventQueueAddress: ", serumEventQueueAddress.toString())
-        // console.log("serumCoinVaultAddress: ", serumCoinVaultAddress.toString())
-        // console.log("serumPcVaultAddress: ", serumPcVaultAddress.toString())
-        // console.log("serumVaultSigner: ", serumVaultSigner.toString())
-
-        // console.log("vaultAddress: ", vaultAddress.toString())
-        // console.log("vaultNativeMintAddress: ", vaultNativeMintAddress.toString())
-        // console.log("vaultTokenAddress: ", vaultTokenAddress.toString())
-        // console.log("mintAddress: ", mintAddress.toString())
-        // console.log("ownerAddress: ", ownerAddress.toString())
-        // console.log("dcaDataAddress: ", dcaDataAddress.toString())
-        // console.log("nativeMintAddress: ", nativeMintAddress.toString())
-        // console.log("TokenProgramId: ", TokenProgramId.toString())
 
         const data = new SwapToSolData(minimumAmountOut).encode();
 
@@ -672,9 +645,9 @@ export class DcaInstruction {
                 AccountMetaBuilder.readonly(serumVaultSigner, false),
 
                 // users address (raydium)
+                AccountMetaBuilder.writable(vaultTokenAddress, false),
                 AccountMetaBuilder.writable(vaultAddress, false),
                 AccountMetaBuilder.writable(vaultNativeMintAddress, false),
-                AccountMetaBuilder.writable(vaultTokenAddress, false),
 
                 // (dca)
                 AccountMetaBuilder.writable(mintAddress, false),

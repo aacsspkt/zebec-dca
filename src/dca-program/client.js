@@ -25,12 +25,12 @@ export const getProvider = async () => {
  */
 export async function depositToken(connection, owner, mint, amount) {
     try {
-        if (!connection && !owner && !mint && !amount) {
+        if (!connection || !owner || !mint || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" && // assumed to be base58
-            typeof mint != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" || // assumed to be base58
+            typeof mint != "string" ||
             typeof amount != "number"
         ) {
             throw new TypeError("Invalid argument types.");
@@ -95,21 +95,20 @@ export async function depositToken(connection, owner, mint, amount) {
  */
 export async function initialize(connection, owner, mint, dcaData, startTime, dcaAmount, dcaTime) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !startTime && !dcaAmount && dcaTime) {
+        if (!connection || !owner || !mint || !dcaData || !startTime || !dcaAmount || !dcaTime) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof mint != "string" &&
-            typeof dcaData != "string" &&
-            typeof startTime != "number" &&
-            typeof dcaAmount != "number" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof mint != "string" ||
+            typeof dcaData != "string" ||
+            typeof startTime != "number" ||
+            typeof dcaAmount != "number" ||
             typeof dcaTime != "number"
         ) {
             throw new TypeError("Invalid argument types.");
         }
-
 
         const ownerAddress = new PublicKey(owner);
         const mintAddress = new PublicKey(mint);
@@ -118,7 +117,6 @@ export async function initialize(connection, owner, mint, dcaData, startTime, dc
         const _startTime = new BN(startTime);
         const _dcaTime = new BN(dcaTime);
         const mintInfo = await getMintInfo(connection, mintAddress);
-        console.log(mintInfo);
         const _dcaAmount = convertToLamports(dcaAmount, mintInfo.decimals);
         const minimumAmountOut = convertToLamports(dcaAmount, mintInfo.decimals);
 
@@ -161,11 +159,11 @@ export async function initialize(connection, owner, mint, dcaData, startTime, dc
  */
 export async function depositSol(connection, owner, mint, amount) {
     try {
-        if (!connection && !owner && !mint && !amount) {
+        if (!connection || !owner || !mint || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
+        if (!(connection instanceof Connection) ||
             !(owner instanceof PublicKey)
         ) {
             throw new TypeError("Not a Rpc enpoint.");
@@ -225,14 +223,14 @@ export async function depositSol(connection, owner, mint, amount) {
  */
 export async function withdrawToken(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !amount) {
+        if (!connection || !owner || !mint || !dcaData || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof dcaData != "string" &&
-            typeof mint != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof dcaData != "string" ||
+            typeof mint != "string" ||
             typeof amount != "number"
         ) {
             throw new TypeError("Invalid argument types.");
@@ -242,6 +240,7 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
+        console.log(vaultAddress);
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const mintInfo = await getMintInfo(connection, mintAddress);
@@ -288,14 +287,14 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
  */
 export async function withdrawSol(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !amount) {
+        if (!connection || !owner || !mint || !dcaData || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof mint != "string" &&
-            typeof dcaData != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof mint != "string" ||
+            typeof dcaData != "string" ||
             typeof amount != "number"
         ) {
             throw new TypeError("Invalid argument types.");
@@ -339,7 +338,7 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
             }
         }
     } catch (e) {
-
+        throw e;
     }
 }
 
@@ -353,13 +352,13 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
  */
 export async function swapFromSol(connection, owner, mint, dcaData) {
     try {
-        if (!connection && !owner && !mint && !dcaData) {
+        if (!connection || !owner || !mint || !dcaData) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof mint != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof mint != "string" ||
             typeof dcaData != "string"
         ) {
             throw new TypeError("Invalid argument type.");
@@ -459,13 +458,13 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
  * @param {string} poolId The address of the amm liquidity pool account
  */
 export async function swapToSol(connection, owner, mint, dcaData) {
-    if (!connection && !owner && !mint && !dcaData) {
+    if (!connection || !owner || !mint || !dcaData) {
         throw new ReferenceError("Missing arguments.");
     }
 
-    if (!(connection instanceof Connection) &&
-        typeof owner != "string" &&
-        typeof mint != "string" &&
+    if (!(connection instanceof Connection) ||
+        typeof owner != "string" ||
+        typeof mint != "string" ||
         typeof dcaData != "string"
     ) {
         throw new TypeError("Invalid argument type.");
@@ -485,18 +484,19 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     //     el.baseMint.includes(mintAddress));
     // if (!keys) throw new Error("No liquidity pool found.")
 
-    // FIDA_SOL
-    const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
+    // RANDOM POOL
+    const POOL_ID = "HeD1cekRWUNR25dcvW8c9bAHeKbr1r7qKEhv7pEegr4f";
 
     const poolKeys = await fetchPoolKeysDevnet(
         connection,
         new PublicKey(POOL_ID)
     );
     const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
-
     const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
-    const amount = new BN(dcaInfo.dcaAmount).div(new BN(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
-
+    const mintInfo = await getMintInfo(connection, mintAddress);
+    console.log(dcaInfo.dcaAmount.toString())
+    const amount = new BN(dcaInfo.dcaAmount).div(new BN(10 ** mintInfo.decimals)); // todo : test this part for decimal output
+    console.log(amount.toNumber())
     const amountIn = new TokenAmount(
         new Token(
             poolKeys.baseMint,
@@ -563,14 +563,14 @@ export async function swapToSol(connection, owner, mint, dcaData) {
  */
 export async function fundToken(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !amount) {
+        if (!connection || !owner || !mint || !dcaData || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof mint != "string" &&
-            typeof dcaData != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof mint != "string" ||
+            typeof dcaData != "string" ||
             typeof amount != "string"
         ) {
             throw new TypeError("Invalid argument type.");
@@ -625,14 +625,14 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
  */
 export async function fundSol(connection, owner, mint, dcaData, amount) {
     try {
-        if (!connection && !owner && !mint && !dcaData && !amount) {
+        if (!connection || !owner || !mint || !dcaData || !amount) {
             throw new ReferenceError("Missing arguments.");
         }
 
-        if (!(connection instanceof Connection) &&
-            typeof owner != "string" &&
-            typeof mint != "string" &&
-            typeof dcaData != "string" &&
+        if (!(connection instanceof Connection) ||
+            typeof owner != "string" ||
+            typeof mint != "string" ||
+            typeof dcaData != "string" ||
             typeof amount != "string"
         ) {
             throw new TypeError("Invalid argument types.");

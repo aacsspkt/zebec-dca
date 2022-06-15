@@ -19,12 +19,15 @@ import {
   NativeMint,
 } from "./dca-program";
 
+const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+
 function App() {
   const onDepositTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
-      const amount = 2;
+      const mint = USDC_MINT;
+      const amount = 0.001;
 
       const { status, data } = await depositToken(
         connection,
@@ -45,8 +48,8 @@ function App() {
   const onDepositSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const amount = 2;
+      const mint = USDC_MINT;
+      const amount = 0.001;
 
       const { status, data } = await depositSol(
         connection,
@@ -68,10 +71,11 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
-      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
+      const mint = USDC_MINT;
+      const dcaData = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
       const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 0.5 min
-      const dcaAmount = 1;
+      console.log(startTime.toString(), new Date(startTime * 1000).toLocaleDateString())
+      const dcaAmount = 0.001;
       const dcaTime = 30 * 60  // 30 min
 
       const minimumAmountOut = 1.5;
@@ -101,7 +105,7 @@ function App() {
     try {
       const owner = window.solana.publicKey.toBase58();
       const dcaData = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
+      const mint = USDC_MINT;
       const amount = 208679458 / (10 ** 6);
 
       console.log(amount);
@@ -126,8 +130,8 @@ function App() {
   const onWithdrawSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
-      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
+      const mint = USDC_MINT;
+      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
       const transferAmount = 0.5;
 
       const { status, data } = await withdrawSol(
@@ -149,9 +153,9 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
-      const dcaData = "DuVkw9348Xfv4UfQqYHTMGGiMozUsTCWia3f4s16AKTR";
-      const transferAmount = 0.5;
+      const mint = USDC_MINT;
+      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
+      const transferAmount = 0.001;
 
       const { status, data } = await fundToken(
         connection,
@@ -172,9 +176,9 @@ function App() {
   const onFundSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const transferAmount = 1;
+      const dcaData = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
+      const mint = USDC_MINT;
+      const transferAmount = 0.001;
 
       const { status, data } = await fundSol(
         connection,
@@ -193,8 +197,8 @@ function App() {
   const onSwapFromSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "8FRFC6MoGGkMFQwngccyu69VnYbzykGeez7ignHVAFSN";
-      const dcaData = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
+      const mint = USDC_MINT;
+      const dcaData = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
       const { status, data } = await swapFromSol(
         connection,
         owner,
@@ -211,8 +215,8 @@ function App() {
   const onSwapToSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = "BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a";
-      const dcaData = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
+      const mint = USDC_MINT;
+      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
       const { status, data } = await swapToSol(
         connection,
         owner,
@@ -226,26 +230,9 @@ function App() {
     }
   }
 
-  const onGetWithdrawableTokenBalanceClicked = async () => {
-    try {
-      const owner = window.solana.publicKey;
-      const mint = new PublicKey("BEcGFQK1T1tSu3kvHC17cyCkQ5dvXqAJ7ExB2bb5Do7a");
-      const dcaDataAddress = new PublicKey("Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D");
-      const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaDataAddress.toBuffer()]);
-      const [vaultAToken,] = await findAssociatedTokenAddress(vault, mint);
-      const [nmVaultAToken,] = await findAssociatedTokenAddress(vault, NativeMint);
-      const response0 = await connection.getTokenAccountBalance(vaultAToken, "finalized");
-      const response1 = await connection.getTokenAccountBalance(nmVaultAToken, "finalized");
-      console.log(`Non native mint balance of ${vault}: ${response0.value.amount}`);
-      console.log(`Native mint balance balance of ${vault}: ${response1.value.amount}`);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   const onDcaDataClick = async () => {
     try {
-      const dcaDataAddress = "Hk69ehdJLuDM6xC1baZYUVKTVmNTUDGKEfPbBfzjJx5D";
+      const dcaDataAddress = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
       let dcaAccount = await connection.getAccountInfo(new PublicKey(dcaDataAddress), "confirmed");
       let dcaData = DcaAccount.decodeUnchecked(dcaAccount.data)
       console.log("Dca Account Data",
@@ -263,6 +250,31 @@ function App() {
       console.log("error: ", e);
     }
   }
+
+  const onGetWithdrawableTokenBalanceClicked = async () => {
+    try {
+      const owner = window.solana.publicKey;
+      const mint = new PublicKey(USDC_MINT);
+      const dcaDataAddress = new PublicKey("uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu");
+      const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaDataAddress.toBuffer()]);
+      console.log("vault", vault.toString());
+
+      const [vaultAToken,] = await findAssociatedTokenAddress(vault, mint);
+      console.log("vaultAToken", vaultAToken.toString());
+
+      const [nmVaultAToken,] = await findAssociatedTokenAddress(vault, NativeMint);
+      console.log("nmVaultAToken", nmVaultAToken.toString())
+
+      const mintBal = await connection.getTokenAccountBalance(vaultAToken, "finalized");
+      console.log(`Non native mint balance of ${vault}: ${mintBal.value.amount}`);
+
+      const nativeMintBal = await connection.getTokenAccountBalance(nmVaultAToken, "finalized");
+      console.log(`Native mint balance balance of ${vault}: ${nativeMintBal.value.amount}`);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   return (
     <div className="App">

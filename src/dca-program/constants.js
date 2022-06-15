@@ -23,7 +23,7 @@ export const AssociatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID;
 export const DcaProgramId = new PublicKey("89U3HCacYnqJYUX33EupQRyKLBAqA9vb6tzAATRp19c7");
 
 /** Json RPC client to communicate with Solana blockchain. */
-export const connection = new Connection(clusterApiUrl("devnet"));
+export const connection = new Connection(clusterApiUrl("mainnet-beta"));
 
 /** The raydium liquidity pool program v4 id. */
 export const LiquidityProgramIdV4 = LIQUIDITY_PROGRAM_ID_V4;

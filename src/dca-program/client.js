@@ -67,7 +67,11 @@ export async function depositToken(connection, owner, mint, amount) {
         const signedTxn = await window.solana.signTransaction(txn);
         const signature = await sendAndConfirmRawTransaction(
             connection,
-            signedTxn.serialize()
+            signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -136,7 +140,11 @@ export async function initialize(connection, owner, mint, dcaData, startTime, dc
 
         const signature = await sendAndConfirmRawTransaction(
             connection,
-            signedTxn.serialize()
+            signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -164,9 +172,11 @@ export async function depositSol(connection, owner, mint, amount) {
         }
 
         if (!(connection instanceof Connection) ||
-            !(owner instanceof PublicKey)
+            typeof owner != "string" ||
+            typeof mint != "string" ||
+            typeof amount != "number"
         ) {
-            throw new TypeError("Not a Rpc enpoint.");
+            throw new TypeError("Invalid argument types.");
         }
 
         let dcaDataAccount = Keypair.generate();
@@ -198,7 +208,11 @@ export async function depositSol(connection, owner, mint, amount) {
 
         const signature = await sendAndConfirmRawTransaction(
             connection,
-            signedTxn.serialize()
+            signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -264,6 +278,10 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const signature = await sendAndConfirmRawTransaction(
             connection,
             signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -330,6 +348,10 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
         const signature = await sendAndConfirmRawTransaction(
             connection,
             signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
         return {
             status: "success",
@@ -371,23 +393,25 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NativeMint)
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress)
 
-        // const poolKeysList = await fetchAllPoolKeys();
-        // if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+        const poolKeysList = await fetchAllPoolKeys();
+        if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
 
-        // const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
-        //     el.baseMint.includes(NativeMint.toBase58()));
-        // if (!keys) throw new Error("No liquidity pool found.")
+        const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
+            el.baseMint.includes(NativeMint.toBase58()));
+        if (!keys) throw new Error("No liquidity pool found.")
+        console.log(keys);
 
         // SOL_USDT
-        const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
+        // const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
 
-        const poolKeys = await fetchPoolKeysDevnet(
+        const poolKeys = await fetchPoolKeys(
             connection,
-            new PublicKey(POOL_ID)
+            new PublicKey(keys.id)
         );
         const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
 
         const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
+        console.log(dcaInfo.dcaAmount.toString());
         const amount = new BN(dcaInfo.dcaAmount).div(new BN(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
 
         const amountIn = new TokenAmount(
@@ -436,6 +460,10 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const signature = await sendAndConfirmRawTransaction(
             connection,
             signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -477,19 +505,19 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
     const [vaultNativeMintAddress,] = await findAssociatedTokenAddress(vaultAddress, NativeMint);
 
-    // const poolKeysList = await fetchAllPoolKeys();
-    // if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
+    const poolKeysList = await fetchAllPoolKeys();
+    if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
 
-    // const keys = poolKeysList.find(el => el.quoteMint.includes(NativeMint) &&
-    //     el.baseMint.includes(mintAddress));
-    // if (!keys) throw new Error("No liquidity pool found.")
-
+    const keys = poolKeysList.find(el => el.quoteMint.includes(NativeMint) &&
+        el.baseMint.includes(mintAddress));
+    if (!keys) throw new Error("No liquidity pool found.")
+    console.log(keys);
     // RANDOM POOL
-    const POOL_ID = "HeD1cekRWUNR25dcvW8c9bAHeKbr1r7qKEhv7pEegr4f";
+    // const POOL_ID = "HeD1cekRWUNR25dcvW8c9bAHeKbr1r7qKEhv7pEegr4f";
 
-    const poolKeys = await fetchPoolKeysDevnet(
+    const poolKeys = await fetchPoolKeys(
         connection,
-        new PublicKey(POOL_ID)
+        new PublicKey(keys.id)
     );
     const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
     const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
@@ -543,6 +571,10 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     const signature = await sendAndConfirmRawTransaction(
         connection,
         signedTxn.serialize(),
+        {
+            commitment: "confirmed",
+            skipPreflight: false,
+        }
     );
 
     return {
@@ -571,7 +603,7 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
             typeof owner != "string" ||
             typeof mint != "string" ||
             typeof dcaData != "string" ||
-            typeof amount != "string"
+            typeof amount != "number"
         ) {
             throw new TypeError("Invalid argument type.");
         }
@@ -602,6 +634,10 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
         const signature = await sendAndConfirmRawTransaction(
             connection,
             signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {
@@ -633,7 +669,7 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
             typeof owner != "string" ||
             typeof mint != "string" ||
             typeof dcaData != "string" ||
-            typeof amount != "string"
+            typeof amount != "number"
         ) {
             throw new TypeError("Invalid argument types.");
         }
@@ -665,7 +701,11 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
 
         const signature = await sendAndConfirmRawTransaction(
             connection,
-            signedTxn.serialize()
+            signedTxn.serialize(),
+            {
+                commitment: "confirmed",
+                skipPreflight: false,
+            }
         );
 
         return {

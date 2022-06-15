@@ -26,9 +26,6 @@ import BN, { isBN } from "bn.js";
 import { AccountMetaBuilder } from "./utils";
 
 
-
-
-
 /** 
  * The class to interact with DCA program
  */

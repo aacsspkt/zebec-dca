@@ -97,7 +97,7 @@ export async function fetchPoolKeys(
     };
 }
 
-export const fetchAllPoolKeys = async () => {
+export async function fetchAllPoolKeys() {
     try {
         const response = await axios.get("https://api.raydium.io/v2/sdk/liquidity/mainnet.json");
         let poolKeysList = [...(response.data.official ?? []), ...(response.data.unOfficial ?? [])];

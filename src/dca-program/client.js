@@ -5,6 +5,7 @@ import { DcaInstruction } from "./instructions";
 import { findAssociatedTokenAddress, convertToLamports, findDcaDerivedAddress, fetchPoolKeys, fetchAllPoolKeys, fetchPoolKeysDevnet, getMintInfo } from "./utils";
 import { Liquidity, Percent, Token, TokenAmount } from "@raydium-io/raydium-sdk";
 import { DcaAccount } from "./state";
+import BigNumber from "bignumber.js";
 
 export const getProvider = async () => {
     const isPhantomInstalled = (await window.solana) && window.solana.isPhantom;
@@ -399,7 +400,6 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const keys = poolKeysList.find(el => el.quoteMint.includes(mint) &&
             el.baseMint.includes(NativeMint.toBase58()));
         if (!keys) throw new Error("No liquidity pool found.")
-        console.log(keys);
 
         // SOL_USDT
         // const POOL_ID = "384zMi9MbUKVUfkUdrnuMfWBwJR9gadSxYimuXeJ9DaJ";
@@ -411,15 +411,20 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
         const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
 
         const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
-        console.log(dcaInfo.dcaAmount.toString());
-        const amount = new BN(dcaInfo.dcaAmount).div(new BN(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
+
+        if (dcaInfo.dcaAmount.toString() === "0") {
+            throw new Error("Dca amout is zero")
+        }
+
+        const amount = new BigNumber(dcaInfo.dcaAmount.toString())
+            .div(new BigNumber(LAMPORTS_PER_SOL)); // todo : test this part for decimal output
 
         const amountIn = new TokenAmount(
             new Token(
                 poolKeys.baseMint,
                 poolInfo.baseDecimals
             ),
-            amount.toString(),
+            amount.toFixed(),
             false
         )
         const currencyOut = new Token(poolKeys.quoteMint, poolInfo.quoteDecimals);
@@ -511,7 +516,6 @@ export async function swapToSol(connection, owner, mint, dcaData) {
     const keys = poolKeysList.find(el => el.quoteMint.includes(NativeMint) &&
         el.baseMint.includes(mintAddress));
     if (!keys) throw new Error("No liquidity pool found.")
-    console.log(keys);
     // RANDOM POOL
     // const POOL_ID = "HeD1cekRWUNR25dcvW8c9bAHeKbr1r7qKEhv7pEegr4f";
 
@@ -520,11 +524,17 @@ export async function swapToSol(connection, owner, mint, dcaData) {
         new PublicKey(keys.id)
     );
     const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
+
     const dcaInfo = await DcaAccount.getDcaAccountInfo(connection, dcaDataAddress);
+    if (dcaInfo.dcaAmount === "0" || dcaInfo.dcaAmount === 0) {
+        throw new Error("Dca amout is zero")
+    }
+
     const mintInfo = await getMintInfo(connection, mintAddress);
-    console.log(dcaInfo.dcaAmount.toString())
-    const amount = new BN(dcaInfo.dcaAmount).div(new BN(10 ** mintInfo.decimals)); // todo : test this part for decimal output
-    console.log(amount.toNumber())
+
+    const amount = new BigNumber(dcaInfo.dcaAmount.toString())
+        .div(new BigNumber(10 ** mintInfo.decimals));
+
     const amountIn = new TokenAmount(
         new Token(
             poolKeys.baseMint,

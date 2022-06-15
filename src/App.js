@@ -21,12 +21,13 @@ import {
 
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+const RAY_MINT = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R";
 
 function App() {
   const onDepositTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = USDC_MINT;
+      const mint = RAY_MINT;
       const amount = 0.001;
 
       const { status, data } = await depositToken(
@@ -71,8 +72,8 @@ function App() {
   const onInitializeClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = USDC_MINT;
-      const dcaData = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
+      const mint = RAY_MINT;
+      const dcaData = "AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX";
       const startTime = Math.floor(Date.now() / 1000) + (0.5 * 60); // add 0.5 min
       console.log(startTime.toString(), new Date(startTime * 1000).toLocaleDateString())
       const dcaAmount = 0.001;
@@ -104,11 +105,11 @@ function App() {
   const onWithdrawTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const dcaData = "3xqr93XohjuYTqq6xvzjYWn8ZJe6e1omU6KUF8Jre7Eu";
+      const dcaData = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
       const mint = USDC_MINT;
-      const amount = 208679458 / (10 ** 6);
-
+      const amount = 20 / (10 ** 6);
       console.log(amount);
+
       const { status, data } = await withdrawToken(
         connection,
         owner,
@@ -130,9 +131,11 @@ function App() {
   const onWithdrawSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = USDC_MINT;
-      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
-      const transferAmount = 0.5;
+      const mint = RAY_MINT;
+      const dcaData = "AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX";
+      const transferAmount = 23549 / (10 ** 9);
+
+      console.log(transferAmount);
 
       const { status, data } = await withdrawSol(
         connection,
@@ -143,7 +146,7 @@ function App() {
       );
 
       console.log(status);
-      console.log(data);
+      console.log(data.signature);
 
     } catch (e) {
       console.log(e.logs ? e.logs : e);
@@ -153,8 +156,8 @@ function App() {
   const onFundTokenClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = USDC_MINT;
-      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
+      const mint = RAY_MINT;
+      const dcaData = "AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX";
       const transferAmount = 0.001;
 
       const { status, data } = await fundToken(
@@ -215,8 +218,8 @@ function App() {
   const onSwapToSolClick = async () => {
     try {
       const owner = window.solana.publicKey.toBase58();
-      const mint = USDC_MINT;
-      const dcaData = "B4mAeTp58jJuoXsLqQnhuytj67TpGQnzqoJDg9FMyzRy";
+      const mint = RAY_MINT;
+      const dcaData = "AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX";
       const { status, data } = await swapToSol(
         connection,
         owner,
@@ -232,7 +235,7 @@ function App() {
 
   const onDcaDataClick = async () => {
     try {
-      const dcaDataAddress = "uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu";
+      const dcaDataAddress = "AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX";
       let dcaAccount = await connection.getAccountInfo(new PublicKey(dcaDataAddress), "confirmed");
       let dcaData = DcaAccount.decodeUnchecked(dcaAccount.data)
       console.log("Dca Account Data",
@@ -254,8 +257,8 @@ function App() {
   const onGetWithdrawableTokenBalanceClicked = async () => {
     try {
       const owner = window.solana.publicKey;
-      const mint = new PublicKey(USDC_MINT);
-      const dcaDataAddress = new PublicKey("uizRumTX5pnUKf6W5syhAfPJAc9Z3j4VcedVgTn8ZWu");
+      const mint = new PublicKey(RAY_MINT);
+      const dcaDataAddress = new PublicKey("AtTJrt7hSCpT4pYB3R7S3Xi59dgp7jVRAEGKJSyjH1nX");
       const [vault,] = await findDcaDerivedAddress([owner.toBuffer(), dcaDataAddress.toBuffer()]);
       console.log("vault", vault.toString());
 

@@ -72,6 +72,7 @@ export async function depositToken(connection, owner, mint, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 
@@ -145,6 +146,7 @@ export async function initialize(connection, owner, mint, dcaData, startTime, dc
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 
@@ -213,6 +215,7 @@ export async function depositSol(connection, owner, mint, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 
@@ -255,7 +258,6 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
         const mintAddress = new PublicKey(mint);
         const dcaDataAddress = new PublicKey(dcaData);
         const [vaultAddress,] = await findDcaDerivedAddress([ownerAddress.toBuffer(), dcaDataAddress.toBuffer()]);
-        console.log(vaultAddress);
         const [ownerTokenAddress,] = await findAssociatedTokenAddress(ownerAddress, mintAddress);
         const [vaultTokenAddress,] = await findAssociatedTokenAddress(vaultAddress, mintAddress);
         const mintInfo = await getMintInfo(connection, mintAddress);
@@ -282,6 +284,7 @@ export async function withdrawToken(connection, owner, mint, dcaData, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 
@@ -352,6 +355,7 @@ export async function withdrawSol(connection, owner, mint, dcaData, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed",
             }
         );
         return {
@@ -468,6 +472,7 @@ export async function swapFromSol(connection, owner, mint, dcaData) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed",
             }
         );
 
@@ -512,7 +517,6 @@ export async function swapToSol(connection, owner, mint, dcaData) {
 
     const poolKeysList = await fetchAllPoolKeys();
     if (poolKeysList.length === 0) throw new Error("Error in retreiving liquidity pool keys");
-
     const keys = poolKeysList.find(el => el.quoteMint.includes(NativeMint) &&
         el.baseMint.includes(mintAddress));
     if (!keys) throw new Error("No liquidity pool found.")
@@ -584,6 +588,7 @@ export async function swapToSol(connection, owner, mint, dcaData) {
         {
             commitment: "confirmed",
             skipPreflight: false,
+            preflightCommitment: "processed"
         }
     );
 
@@ -647,6 +652,7 @@ export async function fundToken(connection, owner, mint, dcaData, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 
@@ -715,6 +721,7 @@ export async function fundSol(connection, owner, mint, dcaData, amount) {
             {
                 commitment: "confirmed",
                 skipPreflight: false,
+                preflightCommitment: "processed"
             }
         );
 

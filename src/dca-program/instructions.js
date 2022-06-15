@@ -8,8 +8,6 @@ import {
     TokenProgramId,
     AssociatedTokenProgramId,
     SysvarRent,
-    DevnetLiquidityProgramIdV4,
-    DevnetSerumProgramIdV3,
 } from "./constants"
 import {
     DepositSolData,
@@ -623,7 +621,7 @@ export class DcaInstruction {
         return new TransactionInstruction({
             keys: [
                 // amm liquidity pool (raydium)
-                AccountMetaBuilder.readonly(DevnetLiquidityProgramIdV4, false),
+                AccountMetaBuilder.readonly(liquidityProgramId, false),
                 AccountMetaBuilder.writable(ammAddress, false),
                 AccountMetaBuilder.readonly(ammAuthorityAddress, false),
                 AccountMetaBuilder.writable(ammOpenOrderAddress, false),
@@ -632,7 +630,7 @@ export class DcaInstruction {
                 AccountMetaBuilder.writable(poolPcTokenAddress, false),
 
                 // serum market
-                AccountMetaBuilder.readonly(DevnetSerumProgramIdV3, false),
+                AccountMetaBuilder.readonly(serumMarketProgramId, false),
                 AccountMetaBuilder.writable(serumMarketAddress, false),
                 AccountMetaBuilder.writable(serumBidsAddress, false),
                 AccountMetaBuilder.writable(serumAskAddress, false),
